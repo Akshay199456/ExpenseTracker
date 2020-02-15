@@ -121,7 +121,7 @@ def login():
         if error is None:
             session.clear()
             session['user_id'] = user['id']
-            return redirect(url_for('index'))
+            return redirect(url_for('hello'))
 
         flash(error)
 
@@ -143,6 +143,7 @@ def load_logged_in_user():
 		g.user = get_db().execute(
 			'SELECT * FROM user WHERE id = ?', (user_id,)
 		).fetchone()
+		print("Current user: ", g.user) # Returns sqlite object; need to get information from it
 
 
 '''
