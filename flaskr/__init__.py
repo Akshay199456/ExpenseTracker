@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask
+from flask import Flask, render_template
 from . import auth
 from . import db
 
@@ -73,7 +73,7 @@ def create_app(test_config=None):
     # a simple page that says hello
     @app.route('/hello')
     def hello():
-        return 'Hello, World!'
+        return render_template('index.html')
     
     # Registers init-db with the app
     db.init_app(app)

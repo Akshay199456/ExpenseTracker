@@ -70,8 +70,8 @@ write in the next step of the tutorial.
 @bp.route('/register', methods = ('GET', 'POST'))
 def register():
 	if request.method == 'POST':
-		username = request.form('username')
-		password = request.form('password')
+		username = request.form['username']
+		password = request.form['password']
 		db = get_db()
 		error = None
 
@@ -83,16 +83,13 @@ def register():
 			error = 'User {} is already registered.'.format(username)
 
 		if error is None:
-            db.execute(
-                'INSERT INTO user (username, password) VALUES (?, ?)',
-                (username, generate_password_hash(password))
-            )
-            db.commit()
-            return redirect(url_for('auth.login'))
+			db.execute('INSERT INTO user (username, password) VALUES (?, ?)',(username, generate_password_hash(password)))
+			db.commit()
+			return redirect(url_for('auth.login'))
 
-        flash(error)
+		flash(error)
 
-    return render_template('auth/register.html')
+	return render_template('auth/register.html')
 
 '''
 The user is queried first and stored in a variable for later use.
