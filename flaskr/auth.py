@@ -153,7 +153,7 @@ load_logged_in_user won’t load a user on subsequent requests.
 @bp.route('/logout')
 def logout():
 	session.clear()
-	return redirect(url_for('index'))
+	return redirect(url_for('hello'))
 
 '''
 Creating, editing, and deleting blog posts will require a user to be logged in.
