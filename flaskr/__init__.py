@@ -71,8 +71,8 @@ def create_app(test_config=None):
         pass
 
     # a simple page that says hello
-    @app.route('/hello')
-    def hello():
+    @app.route('/index')
+    def index():
         return render_template('index.html')
     
     # Registers init-db with the app

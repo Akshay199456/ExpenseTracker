@@ -85,7 +85,7 @@ def register():
 		if error is None:
 			db.execute('INSERT INTO user (username, password) VALUES (?, ?)',(username, generate_password_hash(password)))
 			db.commit()
-			return redirect(url_for('auth.login'))
+			return redirect(url_for('index'))
 
 		flash(error)
 
@@ -121,7 +121,7 @@ def login():
         if error is None:
             session.clear()
             session['user_id'] = user['id']
-            return redirect(url_for('hello'))
+            return redirect(url_for('index'))
 
         flash(error)
 
@@ -143,8 +143,7 @@ def load_logged_in_user():
 		g.user = get_db().execute(
 			'SELECT * FROM user WHERE id = ?', (user_id,)
 		).fetchone()
-		print("Current user: ", g.user) # Returns sqlite object; need to get information from it
-
+		print("Current user: ", g.user['username'])
 
 '''
 To log out, you need to remove the user id from the session. Then 
