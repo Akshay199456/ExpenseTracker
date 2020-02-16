@@ -3,6 +3,7 @@ import os
 from flask import Flask, render_template
 from . import auth
 from . import db
+from . import category
 
 '''
 # Documentation:
@@ -69,11 +70,6 @@ def create_app(test_config=None):
         os.makedirs(app.instance_path)
     except OSError:
         pass
-
-    # a simple page that says hello
-    @app.route('/index')
-    def index():
-        return render_template('index.html')
     
     # Registers init-db with the app
     db.init_app(app)
@@ -81,5 +77,23 @@ def create_app(test_config=None):
     # The authentication blueprint will have views to register new users and to 
     # log in and log out.
     app.register_blueprint(auth.bp)
+    '''
+    Unlike the auth blueprint, the blog blueprint does not have a url_prefix. 
+    So the index view will be at /, the create view at /create, and so on. 
+    The blog is the main feature of Flaskr, so it makes sense that the blog 
+    index will be the main index.
+
+    However, the endpoint for the index view defined below will be category.index. 
+    Some of the authentication views referred to a plain index endpoint. 
+    app.add_url_rule() associates the endpoint name 'index' with the / url so 
+    that url_for('index') or url_for('category.index') will both work, generating 
+    the same / URL either way.
+    '''
+
+    # Import and register the blueprint from the factory using 
+    # app.register_blueprint(). Place the new code at the end of the factory 
+    # function before returning the app.
+    app.register_blueprint(category.bp)
+    app.add_url_rule('/', endpoint='index')
 
     return app

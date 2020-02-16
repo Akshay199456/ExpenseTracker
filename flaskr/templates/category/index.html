@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Index Page{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+  <form method="post">
+    <button type="submit" name='submit_button' value="create_category">Create Category</button>
+    <button type="submit" name='submit_button' value="remove_category">Remove Category</button>
+    <button type="submit" name='submit_button' value="add_expenses">Add Expenses</button>
+    <button type="submit" name='submit_button' value="generate_chart">Generate Chart</button>
+  </form>
+{% endblock %}
