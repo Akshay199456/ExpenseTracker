@@ -85,7 +85,8 @@ def delete():
 				' WHERE type = ? AND user_id = ?', (category_type, g.user['id'])
 			).fetchone()
 
-			print('Does category exist: ', check_category)
+			print('Does category exist: ', check_category, type(check_category['id']))
+			
 			if check_category is None:
 				error = "Category " + category_type + " doesn't exist!"
 				flash(error)
@@ -95,23 +96,28 @@ def delete():
 			# Must add another condition to check if the category that you are trying to use
 			# has more than one expense associated with it. If it has, we can't delete it till
 			# expenses are modified
-
-
-
-
-
-
-
-
-			
 			else:
-				error = 'Category ' + category_type + ' has been removed!'
-				flash(error)
-				db.execute(
-					'DELETE FROM category'
-					' WHERE type = ? AND user_id = ?', (category_type, g.user['id'])
-				)
-				db.commit()
+				check_expense_exists = db.execute(
+					'SELECT *'
+					' FROM expense'
+					' WHERE category_id = ?', (check_category['id'],)
+				).fetchone()
+				print('Check expense exists: ', check_expense_exists, ' category_id: ', check_category['id'])
+				
+				if check_expense_exists is not None:
+					error = "Expenses are associated with " + check_category['type'] +'. They must be deleted before the category can be removed!'
+					flash(error)
+					print('User id: ', g.user['id'])
+					return redirect(url_for('category.delete'))
+
+				else:
+					error = 'Category ' + category_type + ' has been removed!'
+					flash(error)
+					db.execute(
+						'DELETE FROM category'
+						' WHERE type = ? AND user_id = ?', (category_type, g.user['id'])
+					)
+					db.commit()
 			return redirect(url_for('category.index'))
 	return render_template('category/remove.html')
 
