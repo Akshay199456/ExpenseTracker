@@ -23,7 +23,7 @@ def index():
 			'add_expenses' : 'expense.create',
 			# Will need to rename the bottom two since they fall into expenses
 			# and not categories
-			'generate_chart': 'category.chart',
+			'generate_chart': 'expense.chart',
 		}
 		# Need to redirect to proper link on click
 		# return render_template(possible_selection[request_type])
