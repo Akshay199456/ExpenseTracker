@@ -24,6 +24,8 @@ The base template is directly in the templates directory. To keep the others org
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <title>{% block title %}{% endblock %} - Flaskr</title>
+    <!-- import plugin script -->
+    <script src="../static/js/Chart.min.js"></script>
   </head>
   <body>
     <nav>
@@ -49,6 +51,8 @@ The base template is directly in the templates directory. To keep the others org
       {% endfor %}
       {% block content %}{% endblock %}
     </section>
+
+    {% block chart %} {% endblock %}
    
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->

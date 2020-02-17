@@ -83,7 +83,7 @@ def chart():
 		print('All labels: ', labels)
 		print('All values: ', values)
 		print('All colors: ', colors)
-		return redirect(url_for('category.index'))
+		return render_template('expense/chart.html', labels = labels, colors = colors, values = values)
 
 
 def	generate_random_color():
