@@ -1,10 +1,10 @@
 import os
 
 from flask import Flask, render_template
-from . import auth
 from . import db
+from . import auth
 from . import category
-
+from . import expense
 '''
 # Documentation:
 
@@ -89,6 +89,8 @@ def create_app(test_config=None):
     that url_for('index') or url_for('category.index') will both work, generating 
     the same / URL either way.
     '''
+
+    app.register_blueprint(expense.bp)
 
     # Import and register the blueprint from the factory using 
     # app.register_blueprint(). Place the new code at the end of the factory 

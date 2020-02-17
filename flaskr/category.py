@@ -22,7 +22,7 @@ def index():
 			'remove_category' : 'category.delete',
 			# Will need to rename the bottom two since they fall into expenses
 			# and not categories
-			'add_expenses' : 'category.addExpenses',
+			'add_expenses' : 'expense.create',
 			'generate_chart': 'category.chart',
 		}
 		# Need to redirect to proper link on click
