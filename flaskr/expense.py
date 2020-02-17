@@ -13,8 +13,20 @@ bp = Blueprint('expense', __name__, url_prefix = '/expense')
 def create():
 	db = get_db()
 	error = None
+
 	if request.method == 'POST':
-		pass
+		'''
+		print('Request form: ', request.form)
+		print('Type of category: ', type(int(request.form['category'])))
+		print('Type of user: ', type(g.user['id']))
+		print('Type of expense: ', type(int(request.form['expense'])))
+		'''
+		db.execute(
+			'INSERT INTO expense (category_id, user_id, value)'
+			' VALUES (?, ?, ?)', (int(request.form['category']), g.user['id'], int(request.form['expense']))
+		)
+		db.commit()
+		return redirect(url_for('category.index'))
 	else:
 		categories = db.execute(
 			'SELECT * FROM category'
@@ -26,6 +38,7 @@ def create():
 			flash(error)
 			return redirect(url_for('category.index'))
 		else:
+			# Shows the information stored in the list
 			'''
 			print('Categories: ', categories)
 			for category in categories:

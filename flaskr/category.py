@@ -20,9 +20,9 @@ def index():
 		possible_selection = {
 			'create_category' : 'category.create',
 			'remove_category' : 'category.delete',
+			'add_expenses' : 'expense.create',
 			# Will need to rename the bottom two since they fall into expenses
 			# and not categories
-			'add_expenses' : 'expense.create',
 			'generate_chart': 'category.chart',
 		}
 		# Need to redirect to proper link on click
