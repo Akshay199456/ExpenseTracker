@@ -11,14 +11,26 @@
     var ctx = document.getElementById("myChart").getContext('2d');
     // Data getting in loaded properly; However, labels and backgroundColor have some junk
     // value attached; need to fix it
-    var myChart = new Chart(ctx, {
+    var myChart = new Chart(ctx, 
+    {
       type: 'pie',
       data: {
-        labels: {{ labels }},
+        labels: [{% for item in labels %}
+                  "{{item}}",
+                  {% endfor %}
+                ],
         datasets: [{
-          backgroundColor: {{ colors }},
-          data: {{ values }}
+          backgroundColor: [{% for item in colors %}
+                  "{{item}}",
+                  {% endfor %}
+          ],
+          data: [{% for item in values %}
+                  {{item}},
+                  {% endfor %}
+          ]
         }]
+      }
+    });
   </script>
   
 {% endblock %}
