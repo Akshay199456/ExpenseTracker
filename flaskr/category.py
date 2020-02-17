@@ -85,7 +85,7 @@ def delete():
 				' WHERE type = ? AND user_id = ?', (category_type, g.user['id'])
 			).fetchone()
 
-			print('Does category exist: ', check_category, type(check_category['id']))
+			print('Does category exist: ', check_category)
 			
 			if check_category is None:
 				error = "Category " + category_type + " doesn't exist!"
