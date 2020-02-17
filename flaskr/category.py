@@ -61,6 +61,10 @@ def create():
 				)
 				db.commit()
 				return redirect(url_for('category.index'))
-
 	return render_template('category/create.html')
+
+
+@bp.route('/remove', methods = ('GET', 'POST'))
+@login_required
+def remove():
 
