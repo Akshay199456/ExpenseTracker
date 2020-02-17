@@ -91,6 +91,19 @@ def delete():
 				flash(error)
 				print('User id: ', g.user['id'])
 				return redirect(url_for('category.delete'))
+			
+			# Must add another condition to check if the category that you are trying to use
+			# has more than one expense associated with it. If it has, we can't delete it till
+			# expenses are modified
+
+
+
+
+
+
+
+
+			
 			else:
 				error = 'Category ' + category_type + ' has been removed!'
 				flash(error)
