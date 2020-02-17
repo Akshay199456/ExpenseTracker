@@ -19,7 +19,9 @@ def index():
 
 		possible_selection = {
 			'create_category' : 'category.create',
-			'remove_category' : 'category.remove',
+			'remove_category' : 'category.delete',
+			# Will need to rename the bottom two since they fall into expenses
+			# and not categories
 			'add_expenses' : 'category.addExpenses',
 			'generate_chart': 'category.chart',
 		}
@@ -64,7 +66,39 @@ def create():
 	return render_template('category/create.html')
 
 
-@bp.route('/remove', methods = ('GET', 'POST'))
+@bp.route('/delete', methods = ('GET', 'POST'))
 @login_required
-def remove():
+def delete():
+	if request.method == 'POST':
+		error = None
+		print('Request form: ', request.form)
+		category_type = request.form['category'].title()
+
+		if not category_type:
+			error = 'Category type is required!'
+			flash(error)
+		else:
+			db = get_db()
+			check_category = db.execute(
+				'SELECT id, type, user_id'
+				' FROM category'
+				' WHERE type = ? AND user_id = ?', (category_type, g.user['id'])
+			).fetchone()
+
+			print('Does category exist: ', check_category)
+			if check_category is None:
+				error = "Category " + category_type + " doesn't exist!"
+				flash(error)
+				print('User id: ', g.user['id'])
+				return redirect(url_for('category.delete'))
+			else:
+				error = 'Category ' + category_type + ' has been removed!'
+				flash(error)
+				db.execute(
+					'DELETE FROM category'
+					' WHERE type = ? AND user_id = ?', (category_type, g.user['id'])
+				)
+				db.commit()
+			return redirect(url_for('category.index'))
+	return render_template('category/remove.html')
 
