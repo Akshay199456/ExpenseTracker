@@ -71,7 +71,25 @@ def view():
 	if request.method == 'POST':
 		print('We are in view.post')
 		print('Request form: ', request.form)
+
+		key = list(request.form)[0]
+		value = request.form[key].lower()
+		operation_id = int(key.split('_')[1])
+		print('Key: ', key, ' Value: ', value, 'Id: ', operation_id)
+		
+		if value == 'delete':
+			error = 'Expense has been deleted'
+			flash(error)
+
+			db.execute(
+				'DELETE FROM expense'
+				' WHERE user_id = ? AND id = ?', (g.user['id'], operation_id)
+			)
+			db.commit()
+			return redirect(url_for('category.index'))
+
 		return redirect(url_for('category.index'))
+
 	else:
 		all_expenses = db.execute(
 			'SELECT e.id, e.category_id, e.user_id, e.value, c.type'
