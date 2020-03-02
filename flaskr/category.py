@@ -26,8 +26,6 @@ def index():
 			'remove_category' : 'category.delete',
 			'add_expenses' : 'expense.create',
 			'view_expenses' : 'expense.view',
-			# Will need to rename the bottom two since they fall into expenses
-			# and not categories
 			'generate_chart': 'expense.chart',
 		}
 		# Need to redirect to proper link on click

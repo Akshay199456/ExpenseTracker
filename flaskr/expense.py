@@ -86,7 +86,10 @@ def view():
 				' WHERE user_id = ? AND id = ?', (g.user['id'], operation_id)
 			)
 			db.commit()
-			return redirect(url_for('category.index'))
+
+		elif value == 'update':
+			print('We are in update')
+			return redirect(url_for('expense.update', operation_id = operation_id))
 
 		return redirect(url_for('category.index'))
 
@@ -104,6 +107,16 @@ def view():
 		else:
 			print('All expenses: ', all_expenses)
 			return render_template('expense/view.html', all_expenses = all_expenses)
+
+
+
+
+@bp.route('/update/<int:operation_id>')
+@login_required
+def update(operation_id):
+	print('We are in the update route')
+	return render_template('expense/update.html', operation_id = operation_id)
+
 
 
 
