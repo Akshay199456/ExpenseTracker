@@ -70,6 +70,9 @@ write in the next step of the tutorial.
 '''
 @bp.route('/register', methods = ('GET', 'POST'))
 def register():
+	'''
+	Anytime the user wants to register an account, this method is called.
+	'''
 	if request.method == 'POST':
 		username = request.form['username']
 		password = request.form['password']
@@ -105,6 +108,9 @@ requests. Flask securely signs the data so that it can’t be tampered with.
 '''
 @bp.route('/login', methods=('GET', 'POST'))
 def login():
+	'''
+	Anytime the user wants to login, this function is called
+	'''
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
@@ -137,6 +143,10 @@ or if the id doesn’t exist, g.user will be None.
 '''
 @bp.before_app_request
 def load_logged_in_user():
+	'''
+	When the user logs in, the information of the current user (their id) is stored.
+	This function does that.
+	'''
 	user_id = session.get('user_id')
 	if user_id is None:
 		g.user = None
@@ -152,6 +162,9 @@ load_logged_in_user won’t load a user on subsequent requests.
 '''
 @bp.route('/logout')
 def logout():
+	'''
+	Called when the user logs out from the application
+	'''
 	session.clear()
 	return redirect(url_for('auth.login'))
 

@@ -12,6 +12,10 @@ bp = Blueprint('category', __name__)
 
 @bp.route('/', methods = ('GET', 'POST'))
 def index():
+	'''
+	Serves as the home route when the user logs in. Shows all the possible 
+	selections available to the user. Exists at the category.index address.
+	'''
 	if request.method == 'POST':
 		print("Request: ", request.form)
 		error = None
@@ -34,6 +38,10 @@ def index():
 @bp.route('/create', methods = ('GET', 'POST'))
 @login_required
 def create():
+	'''
+	Anytime you want to create a new categoy, this method is called. Exists
+	at the category.create address.
+	'''
 	if request.method == 'POST':
 		print('Request form: ', request.form)
 		error = None
@@ -70,6 +78,10 @@ def create():
 @bp.route('/delete', methods = ('GET', 'POST'))
 @login_required
 def delete():
+	'''
+	Anytime you want to delete a category, this function is called. Exists
+	at the category.delete address
+	'''
 	if request.method == 'POST':
 		error = None
 		print('Request form: ', request.form)

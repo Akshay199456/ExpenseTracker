@@ -14,6 +14,10 @@ bp = Blueprint('expense', __name__, url_prefix = '/expense')
 @bp.route('/create', methods = ('GET', 'POST'))
 @login_required
 def create():
+	'''
+	Anytime you want to create a new expense that's part of a category, this 
+	function will be called. It is located at the expense.create address.
+	'''
 	db = get_db()
 	error = None
 
@@ -57,6 +61,10 @@ def create():
 @bp.route('/view')
 @login_required
 def view():
+	'''
+	Anytime you want to view all the expenses associated with a user, the view
+	function is called. Located at the expense.view address.
+	'''
 	db = get_db()
 	error = None
 	
@@ -75,9 +83,14 @@ def view():
 		return render_template('expense/view.html', all_expenses = all_expenses)	
 
 
+
 @bp.route('/chart')
 @login_required
 def chart():
+	'''
+	Anytime you want to see the chart of expenses across all categories, the
+	chart function is called. Located at the expense.chart address. 
+	'''
 	error = None
 	db = get_db()
 	expenses = db.execute(
@@ -108,7 +121,7 @@ def chart():
 
 
 def	generate_random_color():
-	# Used to generate random hex values
+	# Used to generate random hex values. Primarily used as a helper function.
 	r = lambda: random.randint(0,255)
 	color = '#%02X%02X%02X' % (r(),r(),r())
 	print('Color: ', color)
