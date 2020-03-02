@@ -54,6 +54,27 @@ def create():
 			return render_template('expense/create.html', categories = categories)
 
 
+@bp.route('/view')
+@login_required
+def view():
+	db = get_db()
+	error = None
+	
+	all_expenses = db.execute(
+		'SELECT e.id, e.category_id, e.user_id, e.value, c.type'
+		' FROM expense e JOIN category c ON e.category_id = c.id'
+		' WHERE e.user_id = ?', (g.user['id'],)
+	).fetchall()
+
+	if len(all_expenses) == 0:
+		error = 'No expenses associated with your account. Please create an expense first!'
+		flash(error)
+		return redirect(url_for('category.index'))
+	else:
+		print('All expenses: ', all_expenses)
+		return render_template('expense/view.html', all_expenses = all_expenses)	
+
+
 @bp.route('/chart')
 @login_required
 def chart():
