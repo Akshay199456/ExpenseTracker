@@ -13,8 +13,8 @@
             <div class="card-body">
               <h5 class="card-title">Category: {{expense['type']}}</h5>
               <p class="card-text">Value: ${{expense['value']}}</p>
-              <a href="#" class="btn btn-primary">Update</a>
-              <a href="#" class="btn btn-primary">Delete</a>
+              <input type='submit' class="btn btn-primary" name='submit_{{expense['id']}}' value='Update'>
+              <input type='submit' class="btn btn-primary" name='submit_{{expense['id']}}' value='Delete'>
             </div>
           </div>
         </div>

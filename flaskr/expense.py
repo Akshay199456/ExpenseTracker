@@ -70,6 +70,8 @@ def view():
 
 	if request.method == 'POST':
 		print('We are in view.post')
+		print('Request form: ', request.form)
+		return redirect(url_for('category.index'))
 	else:
 		all_expenses = db.execute(
 			'SELECT e.id, e.category_id, e.user_id, e.value, c.type'
