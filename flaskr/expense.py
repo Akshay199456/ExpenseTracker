@@ -115,7 +115,25 @@ def view():
 @login_required
 def update(operation_id):
 	print('We are in the update route')
-	return render_template('expense/update.html', operation_id = operation_id)
+	error = None
+	db = get_db()
+
+	current_expense = db.execute(
+		'SELECT e.id, e.category_id, e.user_id, e.value, c.type'
+		' FROM expense e JOIN category c ON e.category_id = c.id'
+		' WHERE e.user_id = ? AND e.id = ?', (g.user['id'], operation_id)
+	).fetchone()
+
+	print('Current expense: ', current_expense)
+	if current_expense is None:
+		error = 'No valid expense is associated with the user account!'
+		flash(error)
+		return redirect(url_for('category.index'))
+
+	else:
+		# Need to write code here to update the record. Already have the 
+		# instance of the record to modify in current_expense
+		return render_template('expense/update.html', operation_id = operation_id, current_expense = current_expense)
 
 
 

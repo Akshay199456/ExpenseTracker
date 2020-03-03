@@ -5,5 +5,8 @@
 {% endblock %}
 
 {% block content %}
-  Updating Expense with id: {{operation_id}}
+  Expense id: {{current_expense['id']}}
+  Category Id: {{current_expense['category_id']}}
+  Value: {{current_expense['value']}}
+  Type: {{current_expense['type']}}
 {% endblock %}
