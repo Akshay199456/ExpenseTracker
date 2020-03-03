@@ -111,31 +111,51 @@ def view():
 
 
 
-@bp.route('/update/<int:operation_id>')
+@bp.route('/update/<int:operation_id>', methods = ('GET', 'POST'))
 @login_required
 def update(operation_id):
+	'''
+	This method is called when you want to modify a particular expense
+	'''
 	print('We are in the update route')
 	error = None
 	db = get_db()
-
 	current_expense = db.execute(
 		'SELECT e.id, e.category_id, e.user_id, e.value, c.type'
 		' FROM expense e JOIN category c ON e.category_id = c.id'
 		' WHERE e.user_id = ? AND e.id = ?', (g.user['id'], operation_id)
 	).fetchone()
 
-	print('Current expense: ', current_expense)
-	if current_expense is None:
-		error = 'No valid expense is associated with the user account!'
-		flash(error)
+	if request.method == 'POST':
+		# Need to write code here to update the record. Already have the 
+		# instance of the record to modify in current_expense
+		print('We are in POST section')
+		print('Request form value: ', request.form['value'])
+
+		if(request.form['value']):
+			int_value = int(request.form['value'])
+			print('Number entered', int_value)
+			error = 'Expense has been successfully modified'
+			flash(error)
+			db.execute(
+				'UPDATE expense SET value = ?'
+				' WHERE id = ? AND user_id = ?', (int_value, operation_id, g.user['id'])
+			)
+			db.commit()
+		else:
+			error = 'No value entered. Please enter a number'
+			flash(error)
+
 		return redirect(url_for('category.index'))
 
 	else:
-		# Need to write code here to update the record. Already have the 
-		# instance of the record to modify in current_expense
-		return render_template('expense/update.html', operation_id = operation_id, current_expense = current_expense)
-
-
+		print('Current expense: ', current_expense)
+		if current_expense is None:
+			error = 'No valid expense is associated with the user account!'
+			flash(error)
+			return redirect(url_for('category.index'))
+		else:
+			return render_template('expense/update.html', operation_id = operation_id, current_expense = current_expense)
 
 
 

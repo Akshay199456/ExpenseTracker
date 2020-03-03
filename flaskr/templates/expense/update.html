@@ -5,8 +5,13 @@
 {% endblock %}
 
 {% block content %}
-  Expense id: {{current_expense['id']}}
-  Category Id: {{current_expense['category_id']}}
-  Value: {{current_expense['value']}}
-  Type: {{current_expense['type']}}
+<h1>Expense id: {{current_expense['id']}}</h1>
+<h1>Category Id: {{current_expense['category_id']}}</h1>
+<h1>Type: {{current_expense['type']}}</h1>
+<h1>Current Value: {{current_expense['value']}}</h1>
+<form method="POST">
+  <label for='value'> Enter new value: </label>
+  <input type="number" id='value' name='value'>
+  <input type='submit' value='submit'>
+</form>
 {% endblock %}
