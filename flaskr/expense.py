@@ -127,8 +127,6 @@ def update(operation_id):
 	).fetchone()
 
 	if request.method == 'POST':
-		# Need to write code here to update the record. Already have the 
-		# instance of the record to modify in current_expense
 		print('We are in POST section')
 		print('Request form value: ', request.form['value'])
 
