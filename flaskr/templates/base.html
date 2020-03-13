@@ -41,17 +41,23 @@ The base template is directly in the templates directory. To keep the others org
         {% endif %}
       </ul>
     </nav>
-
-    <section class="content">
-      <header>
-        {% block header %}{% endblock %}
-      </header>
-      {% for message in get_flashed_messages() %}
-        <div class="flash">{{ message }}</div>
-      {% endfor %}
-      {% block content %}{% endblock %}
-    </section>
     
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
+          <div class="card card-signin my-5">
+            <div class="card-body">
+              {% block header %}{% endblock %}
+              {% for message in get_flashed_messages() %}
+                  <div class="flash">{{ message }}</div>
+              {% endfor %}
+              {% block content %}{% endblock %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     {% block chart %} {% endblock %}
    
     <!-- Optional JavaScript -->
