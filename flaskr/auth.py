@@ -89,6 +89,13 @@ def register():
 		if error is None:
 			db.execute('INSERT INTO user (username, password) VALUES (?, ?)',(username, generate_password_hash(password)))
 			db.commit()
+
+			user = db.execute(
+				'SELECT * FROM user WHERE username = ?', (username,)
+			).fetchone()
+			session.clear()
+			session['user_id'] = user['id']
+			print('Session: ', session)
 			return redirect(url_for('index'))
 
 		flash(error)
