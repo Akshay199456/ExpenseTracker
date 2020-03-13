@@ -128,6 +128,10 @@ nav ul li a, nav ul li span, header .action {
   resize: vertical;
 }
 
+.user{
+  color: #fff;
+}
+
 input.danger {
   color: #cc2f2e;
 }
