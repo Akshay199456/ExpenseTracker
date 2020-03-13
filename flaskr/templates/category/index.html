@@ -1,15 +1,17 @@
 {% extends 'base.html' %}
 
 {% block header %}
-  <h1>{% block title %}Index Page{% endblock %}</h1>
+	<h2 class="card-title text-center mt-5">{% block title %}Home{% endblock %}</h2>
 {% endblock %}
 
 {% block content %}
-  <form method="post">
-    <button type="submit" name='submit_button' value="create_category">Create Category</button>
-    <button type="submit" name='submit_button' value="remove_category">Remove Category</button>
-    <button type="submit" name='submit_button' value="add_expenses">Add Expenses</button>
-    <button type="submit" name='submit_button' value="view_expenses">View Expenses</button>
-    <button type="submit" name='submit_button' value="generate_chart">Generate Chart</button>
+  <form class="mt-5" method="post">
+  	<div class="container">
+  		<button class="btn btn-primary btn-block" type="submit" name='submit_button' value="create_category">Create Category</button>
+	    <button class="btn btn-primary btn-block" type="submit" name='submit_button' value="remove_category">Remove Category</button>
+	    <button class="btn btn-primary btn-block" type="submit" name='submit_button' value="add_expenses">Add Expenses</button>
+	    <button class="btn btn-primary btn-block" type="submit" name='submit_button' value="view_expenses">View Expenses</button>
+	    <button class="btn btn-primary btn-block" type="submit" name='submit_button' value="generate_chart">Generate Chart</button>
+  	</div>
   </form>
 {% endblock %}
