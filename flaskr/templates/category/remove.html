@@ -1,13 +1,25 @@
 {% extends 'base.html' %}
 
 {% block header %}
-  <h1>{% block title %}Remove Category{% endblock %}</h1>
+  <h2 class="card-title text-center mt-5">{% block title %}Remove Category{% endblock %}</h2>
 {% endblock %}
 
 {% block content %}
-  <form method="post">
-    <label for="category">Remove Category</label>
-    <input name="category" id="category" required>
-    <input type="submit" value="submit">
-  </form>
+	<div class="container">
+		<div class="row">
+        	<div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
+        		<div class="card card-signin my-5">
+        			<div class="card-body">
+        				<form class="form-signin" method="post">
+        					<div class="form-label-group">
+        						<label for="category"></label>
+    							<input name="category" id="category" class="form-control" placeholder="Remove a category" required>
+        					</div>
+        					<button class="mt-3 btn btn-lg btn-primary btn-block" type="submit" value="submit"> Submit</button>
+        				</form>
+        			</div>
+        		</div>
+        	</div>
+        </div>
+    </div>
 {% endblock %}
