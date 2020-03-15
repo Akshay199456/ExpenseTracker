@@ -11,6 +11,15 @@ import random
 
 bp = Blueprint('expense', __name__, url_prefix = '/expense')
 
+
+def	generate_random_color():
+	# Used to generate random hex values. Primarily used as a helper function.
+	r = lambda: random.randint(0,255)
+	color = '#%02X%02X%02X' % (r(),r(),r())
+	print('Color: ', color)
+	return color
+
+
 @bp.route('/create', methods = ('GET', 'POST'))
 @login_required
 def create():
@@ -156,25 +165,34 @@ def update(operation_id):
 			return render_template('expense/update.html', operation_id = operation_id, current_expense = current_expense)
 
 
-
-@bp.route('/chart')
+@bp.route('/chart/<report_type>')
 @login_required
-def chart():
+def chart(report_type):
 	'''
-	Anytime you want to see the chart of expenses across all categories, the
+	Anytime you want to see the chart of expenses across either debit or credit expenses, the
 	chart function is called. Located at the expense.chart address. 
 	'''
 	error = None
 	db = get_db()
-	expenses = db.execute(
-		'SELECT e.category_id, c.type, SUM(e.value) AS total'
-		' FROM expense e JOIN category c ON e.category_id = c.id'
-		' WHERE e.user_id = ?'
-		' GROUP BY e.category_id', (g.user['id'],)
-	).fetchall()
+
+	if(report_type == 'credit_report'):
+		expenses = db.execute(
+			'SELECT e.category_id, c.type, SUM(e.value) AS total'
+			' FROM expense e JOIN category c ON e.category_id = c.id'
+			' WHERE e.user_id = ? AND e.value >= 0'
+			' GROUP BY e.category_id', (g.user['id'],)
+		).fetchall()
+
+	elif(report_type == 'debit_report'):
+		expenses = db.execute(
+			'SELECT e.category_id, c.type, SUM(e.value) AS total'
+			' FROM expense e JOIN category c ON e.category_id = c.id'
+			' WHERE e.user_id = ? AND e.value < 0'
+			' GROUP BY e.category_id', (g.user['id'],)
+		).fetchall()
 
 	if len(expenses) == 0:
-		error = "No expenses have been added yet. Thus, can't generate user report!"
+		error = "No credit or debit expenses have been added yet. Thus, can't generate user report!"
 		flash(error)
 		return redirect(url_for('category.index'))
 	else:
@@ -185,18 +203,23 @@ def chart():
 			# print("Expense: ", current_expense)
 			# print("Current color: ", generate_random_color())
 			labels.append(current_expense['type'])
-			values.append(current_expense['total'])
+			values.append(abs(current_expense['total']))
 			colors.append(generate_random_color())
 		print('All labels: ', labels)
 		print('All values: ', values)
 		print('All colors: ', colors)
-		return render_template('expense/chart.html', labels = labels, colors = colors, values = values)
+		return render_template('expense/chart.html', report_type = report_type ,labels = labels, colors = colors, values = values)
 
 
-def	generate_random_color():
-	# Used to generate random hex values. Primarily used as a helper function.
-	r = lambda: random.randint(0,255)
-	color = '#%02X%02X%02X' % (r(),r(),r())
-	print('Color: ', color)
-	return color
+@bp.route('/report', methods = ('GET', 'POST'))
+@login_required
+def report():
+	'''
+	Provides the user the ability to view his credit and debit report
+	'''
+	if request.method == 'POST':
+		print('Request form at report route: ', request.form)
+		return redirect(url_for('expense.chart', report_type = request.form['submit_button']))
+	else:
+		return render_template('expense/report.html');
 

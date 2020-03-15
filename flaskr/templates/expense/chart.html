@@ -1,7 +1,15 @@
 {% extends 'base.html' %}
 
 {% block header %}
-  <h2 class="card-title text-center my-5">{% block title %}Expense Report{% endblock %}</h2>
+  <h2 class="card-title text-center my-5">
+    {% block title %}
+      {% if report_type == 'credit_report' %}
+        Credit Report
+      {% elif report_type == 'debit_report' %}
+        Debit Report
+      {% endif %}
+    {% endblock %}
+  </h2>
 {% endblock %}
 
 {% block chart %}

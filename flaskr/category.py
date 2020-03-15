@@ -26,7 +26,7 @@ def index():
 			'remove_category' : 'category.delete',
 			'add_expenses' : 'expense.create',
 			'view_expenses' : 'expense.view',
-			'generate_chart': 'expense.chart',
+			'generate_chart': 'expense.report',
 		}
 		# Need to redirect to proper link on click
 		# return render_template(possible_selection[request_type])
