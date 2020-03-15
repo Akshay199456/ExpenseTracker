@@ -200,9 +200,14 @@ def chart(report_type):
 		).fetchall()
 
 	if len(expenses) == 0:
-		error = "No credit or debit expenses have been added yet. Thus, can't generate user report!"
+		if(report_type == 'credit_report'):		
+			error = "No credit expenses have been added yet. Thus, can't generate credit report!"
+		elif(report_type == 'debit_report'):
+			error = "No debit expenses have been added yet. Thus, can't generate debit report!"
+
 		flash(error)
 		return redirect(url_for('category.index'))
+	
 	else:
 		labels, values, colors = [], [], []
 		print('All expenses: ', expenses)
