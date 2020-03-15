@@ -21,10 +21,10 @@
     // value attached; need to fix it
     var myChart = new Chart(ctx, 
     {
-      type: 'pie',
+      type: 'doughnut',
       data: {
-        labels: [{% for item in labels %}
-                  "{{item}}",
+        labels: [{% for i in ranges %}
+                  "{{labels[i]}}({{percent_values[i]}}%)",
                   {% endfor %}
                 ],
         datasets: [{

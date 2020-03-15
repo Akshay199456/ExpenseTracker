@@ -20,6 +20,14 @@ def	generate_random_color():
 	return color
 
 
+def getPercentValues(values):
+	percentValues = []
+	print('Total: ', sum(values))
+	for value in values:
+		percentValues.append(round(100 * float(value) / float(sum(values)),  2))
+	return percentValues
+
+
 @bp.route('/create', methods = ('GET', 'POST'))
 @login_required
 def create():
@@ -208,7 +216,8 @@ def chart(report_type):
 		print('All labels: ', labels)
 		print('All values: ', values)
 		print('All colors: ', colors)
-		return render_template('expense/chart.html', report_type = report_type ,labels = labels, colors = colors, values = values)
+		percent_values = getPercentValues(values)
+		return render_template('expense/chart.html', report_type = report_type ,labels = labels, colors = colors, values = values, percent_values = percent_values, ranges = range(len(labels)))
 
 
 @bp.route('/report', methods = ('GET', 'POST'))
