@@ -22,6 +22,7 @@ def index():
 		request_type = request.form['submit_button']
 
 		possible_selection = {
+			'set_budget' : 'expense.budget',
 			'create_category' : 'category.create',
 			'remove_category' : 'category.delete',
 			'add_expenses' : 'expense.create',
