@@ -235,5 +235,34 @@ def report():
 		print('Request form at report route: ', request.form)
 		return redirect(url_for('expense.chart', report_type = request.form['submit_button']))
 	else:
-		return render_template('expense/report.html');
+		return render_template('expense/report.html')
+
+
+@bp.route('/budget', methods = ('GET', 'POST'))
+@login_required
+def budget():
+	'''
+	Allows the user to set a budget limit on the debit(spending)
+	'''
+	error = None
+	db = get_db()
+	current_budget = db.execute(
+		'SELECT budget FROM user'
+		' WHERE id = ?', (g.user['id'],)
+	).fetchone()
+
+	if request.method == 'POST':
+		print('Request form from budget route: ', type(request.form['budget']))
+		db.execute(
+			'UPDATE user SET budget = ?'
+			' WHERE id = ?', (int(request.form['budget']), g.user['id'])
+		)
+		db.commit()
+		error = 'Budget has been updated!'
+		flash(error)
+
+		return redirect(url_for('category.index'))
+
+	else:
+		return render_template('expense/budget.html', current_budget = current_budget)
 
