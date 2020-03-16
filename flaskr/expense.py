@@ -50,7 +50,38 @@ def create():
 			' VALUES (?, ?, ?)', (int(request.form['category']), g.user['id'], int(request.form['expense']))
 		)
 		db.commit()
+		error = 'Expense has been added'
+		flash(error)
+
+		# Get the current budget of the user and send information to them if they are close to 
+		# hitting the budget set or exceed the budget
+		current_budget = db.execute(
+			'SELECT budget FROM user'
+			' WHERE id = ?', (g.user['id'],)
+		).fetchone()
+		print('Current budget from create: ', current_budget['budget'])
+		budget_value = int(current_budget['budget'])
+
+		# Get the current debit hit by the user
+		current_debit = db.execute(
+			'SELECT SUM(value) AS total'
+			' FROM expense'
+			' WHERE user_id = ? AND value < 0' , (g.user['id'],)
+		).fetchone()
+
+		print("Current debit: ", current_debit['total'])
+		debit_value = abs(int(current_debit['total']))
+		
+		# Show 'warning' flask message if total debit expenses near 80% of current budget(debit) limit
+		# or 'error' flask message if it exceeds the budget
+		if(debit_value > budget_value):
+			error = 'You have exceeded the budget limit!'
+			flash(error, 'error')
+		elif(debit_value > 0.8 * budget_value):
+			error = 'You are close to hitting the budget limit!'
+			flash(error, 'warning')
 		return redirect(url_for('category.index'))
+
 	else:
 		categories = db.execute(
 			'SELECT * FROM category'
@@ -225,6 +256,7 @@ def chart(report_type):
 		return render_template('expense/chart.html', report_type = report_type ,labels = labels, colors = colors, values = values, percent_values = percent_values, ranges = range(len(labels)))
 
 
+
 @bp.route('/report', methods = ('GET', 'POST'))
 @login_required
 def report():
@@ -262,7 +294,6 @@ def budget():
 		flash(error)
 
 		return redirect(url_for('category.index'))
-
 	else:
 		return render_template('expense/budget.html', current_budget = current_budget)
 
