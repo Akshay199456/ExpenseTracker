@@ -74,10 +74,10 @@ def create():
 		
 		# Show 'warning' flask message if total debit expenses near 80% of current budget(debit) limit
 		# or 'error' flask message if it exceeds the budget
-		if(debit_value >= budget_value):
+		if(debit_value >= budget_value and budget_value != 0):
 			error = 'You have exceeded the budget limit!'
 			flash(error, 'error')
-		elif(debit_value > 0.8 * budget_value):
+		elif(debit_value > 0.8 * budget_value and budget_value != 0):
 			error = 'You are close to hitting the budget limit!'
 			flash(error, 'warning')
 		return redirect(url_for('category.index'))
@@ -211,10 +211,10 @@ def update(operation_id):
 			
 			# Show 'warning' flask message if total debit expenses near 80% of current budget(debit) limit
 			# or 'error' flask message if it exceeds the budget
-			if(debit_value >= budget_value):
+			if(debit_value >= budget_value and budget_value != 0):
 				error = 'You have exceeded the budget limit!'
 				flash(error, 'error')
-			elif(debit_value > 0.8 * budget_value):
+			elif(debit_value > 0.8 * budget_value and budget_value != 0):
 				error = 'You are close to hitting the budget limit!'
 				flash(error, 'warning')
 			return redirect(url_for('category.index'))
