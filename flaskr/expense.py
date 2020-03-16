@@ -74,7 +74,7 @@ def create():
 		
 		# Show 'warning' flask message if total debit expenses near 80% of current budget(debit) limit
 		# or 'error' flask message if it exceeds the budget
-		if(debit_value > budget_value):
+		if(debit_value >= budget_value):
 			error = 'You have exceeded the budget limit!'
 			flash(error, 'error')
 		elif(debit_value > 0.8 * budget_value):
@@ -188,11 +188,42 @@ def update(operation_id):
 				' WHERE id = ? AND user_id = ?', (int_value, operation_id, g.user['id'])
 			)
 			db.commit()
+
+
+			# Get the current budget of the user and send information to them if they are close to 
+			# hitting the budget set or exceed the budget
+			current_budget = db.execute(
+				'SELECT budget FROM user'
+				' WHERE id = ?', (g.user['id'],)
+			).fetchone()
+			print('Current budget from update: ', current_budget['budget'])
+			budget_value = int(current_budget['budget'])
+
+			# Get the current debit hit by the user
+			current_debit = db.execute(
+				'SELECT SUM(value) AS total'
+				' FROM expense'
+				' WHERE user_id = ? AND value < 0' , (g.user['id'],)
+			).fetchone()
+
+			print("Current debit: ", current_debit['total'])
+			debit_value = abs(int(current_debit['total']))
+			
+			# Show 'warning' flask message if total debit expenses near 80% of current budget(debit) limit
+			# or 'error' flask message if it exceeds the budget
+			if(debit_value >= budget_value):
+				error = 'You have exceeded the budget limit!'
+				flash(error, 'error')
+			elif(debit_value > 0.8 * budget_value):
+				error = 'You are close to hitting the budget limit!'
+				flash(error, 'warning')
+			return redirect(url_for('category.index'))
+		
 		else:
 			error = 'No value entered. Please enter a number'
 			flash(error)
 
-		return redirect(url_for('category.index'))
+			return redirect(url_for('category.index'))
 
 	else:
 		print('Current expense: ', current_expense)
