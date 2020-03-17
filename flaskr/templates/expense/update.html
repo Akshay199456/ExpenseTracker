@@ -12,10 +12,8 @@
   <h4 class="card-title">Transaction: Credit</h4>
   {% endif %}
 	<h4 class="display-5"> Category: {{current_expense['type']}}</h4>
-  <h4 class="display-5"> Current Value: {{current_expense['value']}}</h4>
+  <h4 class="display-5"> Current Value: {{current_expense['value']|abs}}</h4>
   <hr class="my-4">
-  <p class>Expense id: {{current_expense['id']}} </h6>
-  <p class> Category Id: {{current_expense['category_id']}}</p>
 </div>
 
 <div class="container">
