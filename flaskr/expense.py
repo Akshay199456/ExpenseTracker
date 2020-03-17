@@ -8,8 +8,11 @@ from flaskr.db import get_db
 
 import matplotlib.pyplot as plt
 import random
+import json
 
 bp = Blueprint('expense', __name__, url_prefix = '/expense')
+
+# Helper Functions
 
 
 def	generate_random_color():
@@ -27,6 +30,48 @@ def getPercentValues(values):
 		percentValues.append(round(100 * float(value) / float(sum(values)),  2))
 	return percentValues
 
+
+def get_dict(expenses_grouped):
+	dict_expense = {}
+	for expense in expenses_grouped:
+		dict_expense[expense['type']] = abs(int(expense['total']))
+	return dict_expense
+
+
+def get_sorted_chart_values(mapped_credit_expense, mapped_debit_expense):
+	sorted_entities = []
+	sorted_keys = []
+	sorted_credit_values = []
+	sorted_debit_values = []
+
+	radial_list = []
+	each_object_dict = {}
+	labels = ['Credit Distribution', 'Debit Distribution']
+	colors = ["rgba(200,0,0,0.2)", "rgba(0,0,200,0.2)"]
+
+	for key in sorted(mapped_credit_expense.keys()):
+		sorted_keys.append(key)
+		sorted_credit_values.append(mapped_credit_expense[key])
+		sorted_debit_values.append(mapped_debit_expense[key])
+
+	# Entering credit into radial list of objects
+	each_object_dict['label'] = labels[0]
+	each_object_dict['backgroundColor'] = colors[0]
+	each_object_dict['data'] = sorted_credit_values
+	radial_list.append(each_object_dict)
+
+	# Entering debit into radial list of objects
+	each_object_dict = {}
+	each_object_dict['label'] = labels[1]
+	each_object_dict['backgroundColor'] = colors[1]
+	each_object_dict['data'] = sorted_debit_values
+	radial_list.append(each_object_dict)
+
+	return(sorted_keys, radial_list)
+
+
+
+# Routes
 
 @bp.route('/create', methods = ('GET', 'POST'))
 @login_required
@@ -53,33 +98,36 @@ def create():
 		error = 'Expense has been added'
 		flash(error)
 
-		# Get the current budget of the user and send information to them if they are close to 
-		# hitting the budget set or exceed the budget
-		current_budget = db.execute(
-			'SELECT budget FROM user'
-			' WHERE id = ?', (g.user['id'],)
-		).fetchone()
-		print('Current budget from create: ', current_budget['budget'])
-		budget_value = int(current_budget['budget'])
+		# Only if the user enters a debit expense should we proceed with the check for debit limit
+		if(int(request.form['expense']) < 0):
+			# Get the current budget of the user and send information to them if they are close to 
+			# hitting the budget set or exceed the budget
+			current_budget = db.execute(
+				'SELECT budget FROM user'
+				' WHERE id = ?', (g.user['id'],)
+			).fetchone()
+			print('Current budget from create: ', current_budget['budget'])
+			budget_value = int(current_budget['budget'])
 
-		# Get the current debit hit by the user
-		current_debit = db.execute(
-			'SELECT SUM(value) AS total'
-			' FROM expense'
-			' WHERE user_id = ? AND value < 0' , (g.user['id'],)
-		).fetchone()
+			# Get the current debit hit by the user
+			current_debit = db.execute(
+				'SELECT SUM(value) AS total'
+				' FROM expense'
+				' WHERE user_id = ? AND value < 0' , (g.user['id'],)
+			).fetchone()
 
-		print("Current debit: ", current_debit['total'])
-		debit_value = abs(int(current_debit['total']))
-		
-		# Show 'warning' flask message if total debit expenses near 80% of current budget(debit) limit
-		# or 'error' flask message if it exceeds the budget
-		if(debit_value >= budget_value and budget_value != 0):
-			error = 'You have exceeded the budget limit!'
-			flash(error, 'error')
-		elif(debit_value > 0.8 * budget_value and budget_value != 0):
-			error = 'You are close to hitting the budget limit!'
-			flash(error, 'warning')
+			print("Current debit: ", current_debit['total'])
+			debit_value = abs(int(current_debit['total']))
+			
+			# Show 'warning' flask message if total debit expenses near 80% of current budget(debit) limit
+			# or 'error' flask message if it exceeds the budget
+			if(debit_value >= budget_value and budget_value != 0):
+				error = 'You have exceeded the budget limit!'
+				flash(error, 'error')
+			elif(debit_value > 0.8 * budget_value and budget_value != 0):
+				error = 'You are close to hitting the budget limit!'
+				flash(error, 'warning')
+
 		return redirect(url_for('category.index'))
 
 	else:
@@ -189,34 +237,35 @@ def update(operation_id):
 			)
 			db.commit()
 
+			if(int_value < 0):
+				# Get the current budget of the user and send information to them if they are close to 
+				# hitting the budget set or exceed the budget
+				current_budget = db.execute(
+					'SELECT budget FROM user'
+					' WHERE id = ?', (g.user['id'],)
+				).fetchone()
+				print('Current budget from update: ', current_budget['budget'])
+				budget_value = int(current_budget['budget'])
 
-			# Get the current budget of the user and send information to them if they are close to 
-			# hitting the budget set or exceed the budget
-			current_budget = db.execute(
-				'SELECT budget FROM user'
-				' WHERE id = ?', (g.user['id'],)
-			).fetchone()
-			print('Current budget from update: ', current_budget['budget'])
-			budget_value = int(current_budget['budget'])
+				# Get the current debit hit by the user
+				current_debit = db.execute(
+					'SELECT SUM(value) AS total'
+					' FROM expense'
+					' WHERE user_id = ? AND value < 0' , (g.user['id'],)
+				).fetchone()
 
-			# Get the current debit hit by the user
-			current_debit = db.execute(
-				'SELECT SUM(value) AS total'
-				' FROM expense'
-				' WHERE user_id = ? AND value < 0' , (g.user['id'],)
-			).fetchone()
-
-			print("Current debit: ", current_debit['total'])
-			debit_value = abs(int(current_debit['total']))
+				print("Current debit: ", current_debit['total'])
+				debit_value = abs(int(current_debit['total']))
+				
+				# Show 'warning' flask message if total debit expenses near 80% of current budget(debit) limit
+				# or 'error' flask message if it exceeds the budget
+				if(debit_value >= budget_value and budget_value != 0):
+					error = 'You have exceeded the budget limit!'
+					flash(error, 'error')
+				elif(debit_value > 0.8 * budget_value and budget_value != 0):
+					error = 'You are close to hitting the budget limit!'
+					flash(error, 'warning')
 			
-			# Show 'warning' flask message if total debit expenses near 80% of current budget(debit) limit
-			# or 'error' flask message if it exceeds the budget
-			if(debit_value >= budget_value and budget_value != 0):
-				error = 'You have exceeded the budget limit!'
-				flash(error, 'error')
-			elif(debit_value > 0.8 * budget_value and budget_value != 0):
-				error = 'You are close to hitting the budget limit!'
-				flash(error, 'warning')
 			return redirect(url_for('category.index'))
 		
 		else:
@@ -260,6 +309,8 @@ def chart(report_type):
 			' WHERE e.user_id = ? AND e.value < 0'
 			' GROUP BY e.category_id', (g.user['id'],)
 		).fetchall()
+	elif(report_type == 'radial_report'):
+		return redirect(url_for('expense.radial'))
 
 	if len(expenses) == 0:
 		if(report_type == 'credit_report'):		
@@ -328,3 +379,69 @@ def budget():
 	else:
 		return render_template('expense/budget.html', current_budget = current_budget)
 
+
+@bp.route('/radial')
+@login_required
+def radial():
+	'''
+	Generates the radial chart for the user
+	'''
+
+	error = None
+	db = get_db()
+
+	# Get all credit expenses grouped by categories
+	credit_expenses_grouped = db.execute(
+		'SELECT e.id, e.category_id, e.user_id, sum(e.value) as total, c.type'
+		' FROM expense e JOIN category c ON e.category_id = c.id'
+		' WHERE e.user_id = ? AND e.value >= 0'
+		' GROUP BY e.category_id', (g.user['id'],)
+	).fetchall()
+
+	# Get all debit expenses grouped by categories
+	debit_expenses_grouped = db.execute(
+		'SELECT e.id, e.category_id, e.user_id, sum(e.value) as total, c.type'
+		' FROM expense e JOIN category c ON e.category_id = c.id'
+		' WHERE e.user_id = ? AND e.value < 0'
+		' GROUP BY e.category_id', (g.user['id'],)
+	).fetchall()
+
+	if credit_expenses_grouped or debit_expenses_grouped:
+		print('Credit expenses: ', credit_expenses_grouped)
+		print('Debit expenses: ', debit_expenses_grouped)
+
+		# Get dictioniary representation of credit and debit expenses
+		mapped_credit_expense = {}
+		mapped_debit_expense = {}
+		mapped_credit_expense = get_dict(credit_expenses_grouped)
+		mapped_debit_expense = get_dict(debit_expenses_grouped)
+		print('Mapped credit expense: ', mapped_credit_expense)
+		print('Mapped debit expense: ', mapped_debit_expense)
+
+		# Get missing categories across each category and fill them with 0 instead
+
+		# Those present in credit and not in debit get added to debit with 0 
+		for category in set(mapped_credit_expense) - set(mapped_debit_expense):
+			mapped_debit_expense[category] = 0
+
+		# Those present in debit and not in credit get added to credit with 0 
+		for category in set(mapped_debit_expense) - set(mapped_credit_expense):
+			mapped_credit_expense[category] = 0
+
+		print('Mapped credit expense after missing categories: ', mapped_credit_expense)
+		print('Mapped debit expense after missing categories: ', mapped_debit_expense)
+
+		# Get data in appropriate format for displaying it on radial chart
+		# Keys need to be in sorted order for 'labels' and 'data' of 'datasets'
+		(sorted_keys, radial_list) = get_sorted_chart_values(mapped_credit_expense, mapped_debit_expense)
+		print('Sorted keys: ', sorted_keys)
+		print('Radial List: ', radial_list)
+
+		return render_template('expense/radial.html', sorted_keys = sorted_keys, radial_list = radial_list)
+	
+	else:
+		error = 'Please add expenses(credit/debit) to generate radar chart!'
+		flash(error)
+		return redirect(url_for('category.index'))
+
+	# return 'We are in radial route!'

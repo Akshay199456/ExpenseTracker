@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h2 class="card-title text-center my-5">
+    {% block title %} Radar Report {% endblock %}
+  </h2>
+{% endblock %}
+
+{% block chart %}
+  <!-- bar chart canvas element -->
+  <canvas id="myChart" width="600" height="400"></canvas>
+  <script>
+    var ctx = document.getElementById("myChart").getContext('2d');
+    var myChart = new Chart(ctx, 
+    {
+      type: 'radar',
+      data: {
+        labels: [{% for item in sorted_keys %}
+                  "{{item}}",
+                  {% endfor %}
+                ],
+        datasets: [{% for item in radial_list %}
+                  {
+                    label: "{{item['label']}}",
+                    backgroundColor: "{{item['backgroundColor']}}",
+                    data: {{item['data']}}
+                  },
+                   {% endfor %}
+        ]
+      },
+      options: {
+          scale: {
+              angleLines: {
+                  display: false
+              },
+              ticks: {
+                  suggestedMin: 50,
+                  suggestedMax: 100
+              }
+          }
+      }
+    });
+  </script>
+  
+{% endblock %}
