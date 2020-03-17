@@ -28,6 +28,7 @@ def index():
 			'add_expenses' : 'expense.create',
 			'view_expenses' : 'expense.view',
 			'generate_chart': 'expense.report',
+			'user_portal': 'user.index'
 		}
 		# Need to redirect to proper link on click
 		# return render_template(possible_selection[request_type])

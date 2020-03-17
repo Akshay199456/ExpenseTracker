@@ -5,6 +5,7 @@ from . import db
 from . import auth
 from . import category
 from . import expense
+from . import user
 '''
 # Documentation:
 
@@ -96,6 +97,7 @@ def create_app(test_config=None):
     # app.register_blueprint(). Place the new code at the end of the factory 
     # function before returning the app.
     app.register_blueprint(category.bp)
+    app.register_blueprint(user.bp)
     app.add_url_rule('/', endpoint='index')
 
     return app

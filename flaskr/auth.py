@@ -74,7 +74,7 @@ def register():
 	Anytime the user wants to register an account, this method is called.
 	'''
 	if request.method == 'POST':
-		username = request.form['username']
+		username = request.form['username'].title()
 		password = request.form['password']
 		db = get_db()
 		error = None
