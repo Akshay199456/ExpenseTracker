@@ -15,6 +15,7 @@
               <h5 class="card-title">User: {{user['username']}} </h5>
             {% if user['id'] in friend_set %}
               <input type='submit' class="btn btn-info" name='submit_{{user['id']}}' value='Friend' disabled>
+              <input type='submit' class="btn btn-danger" name='submit_{{user['id']}}' value='Remove'>
             {% elif user['id'] in friend_request_sent_set %}
             <input type='submit' class="btn btn-warning" name='submit_{{user['id']}}' value='Pending' disabled>
             {% elif user['id'] in friend_request_received_set %}
