@@ -122,6 +122,15 @@ def handle_index_post(request, db):
 		flash(error)
 
 	# If the request is to reject a friend request
+	elif value == 'reject':
+		print('We are in reject!')
+		# Remove the friend request from the person who has received the request
+		remove_friend_request(db, g.user['id'], operation_id, 1)
+		# Remove the friend request from the person who has sent the request
+		remove_friend_request(db, operation_id, g.user['id'], 0)
+
+		error = 'Friend Request Declined!'
+		flash(error)
 
 	# If the request is to remove a friend 
 
