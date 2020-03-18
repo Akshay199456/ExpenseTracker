@@ -66,6 +66,26 @@ def display_buttons(db):
 	return friend_set, friend_request_sent_set, friend_request_received_set
 
 
+def accept_friend_request(db, user_1, user_2, operation_type):
+	'''
+	Accepts friend request and stores them as friends in database
+	'''
+	db.execute(
+		'INSERT INTO friendrequest (user_id, friend_id, friend_type_request)'
+		' VALUES (?, ?, ?)', (user_1, user_2, operation_type)
+	)
+	db.commit()
+
+
+def remove_friend_request(db, user_1, user_2, operation_type):
+	'''
+	Removes friend request from database
+	'''
+	db.execute(
+		'DELETE FROM friendrequest'
+		' WHERE user_id = ? AND friend_id = ? AND friend_type_request = ?' ,(user_1, user_2, operation_type)
+	)
+	db.commit()
 
 
 def handle_index_post(request, db):
@@ -85,34 +105,18 @@ def handle_index_post(request, db):
 	if value == 'accept':
 		# 1. Must add it to the database of the current user by setting friend_type_request = 2
 		# print('We are in accept!')
-		db.execute(
-			'INSERT INTO friendrequest (user_id, friend_id, friend_type_request)'
-			' VALUES (?, ?, ?)', (g.user['id'], operation_id, 2)
-		)
-		db.commit()
-
+		accept_friend_request(db, g.user['id'], operation_id, 2)
 
 		# 2. Must add it to the database of the user who sent the friend request by setting
 		# 	friend_type_request = 2
-		db.execute(
-			'INSERT INTO friendrequest (user_id, friend_id, friend_type_request)'
-			' VALUES (?, ?, ?)', (operation_id, g.user['id'], 2)
-		)
-		db.commit()
+		accept_friend_request(db, operation_id, g.user['id'], 2)
 		
 		# 3. Must remove the friendrequest from the current user where friend_type_request = 1
-		db.execute(
-			'DELETE FROM friendrequest'
-			' WHERE user_id = ? AND friend_id = ? AND friend_type_request = ?' ,(g.user['id'], operation_id, 1)
-		)
-		db.commit()
+		remove_friend_request(db, g.user['id'], operation_id, 1)
+
 		# 4. Must remove the friendrequest from the user who sent the friend request where 
 		# 	friend_type_request = 0
-		db.execute(
-			'DELETE FROM friendrequest'
-			' WHERE user_id = ? AND friend_id = ? AND friend_type_request = ?' ,(operation_id, g.user['id'], 0)
-		)
-		db.commit()
+		remove_friend_request(db, operation_id, g.user['id'], 0)
 
 		error = 'Friend Request Accepted!'
 		flash(error)
