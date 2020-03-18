@@ -9,18 +9,15 @@ from flaskr.db import get_db
 bp = Blueprint('user', __name__, url_prefix = '/user')
 
 
-
 def display_buttons(db):
 	'''
 	Displays the appropriate buttons depending on the kind of friend request
-	Currently have three different type of requests:
+	Currently have four different type of requests:
 		1. 'Send Request' -> sends a friend request to the user
 		2. 'Request Sent' -> user has already sent a friend request to the appropriate user
 							but has not been accepted yet
 		3. 'Friend' -> Friend Request has been accepted
-
-	Might also need to add here that if the user who has received the friend request rejects
-	the request, the user who sent it should be able to see the 'Send Request' button
+		4. 'Remove' -> Removes the current friend
 	'''
 	print('Current user id from display_buttons: ', g.user['id'])
 
@@ -90,7 +87,6 @@ def remove_friend_request(db, user_1, user_2, operation_type):
 	db.commit()
 
 
-
 def handle_index_post(request, db):
 	'''
 	Handles the post request associated with the user portal
@@ -107,7 +103,7 @@ def handle_index_post(request, db):
 	# If the request is to accept a friend request
 	if value == 'accept':
 		# 1. Must add it to the database of the current user by setting friend_type_request = 2
-		# print('We are in accept!')
+		print('We are in accept!')
 		accept_friend_request(db, g.user['id'], operation_id, 2)
 
 		# 2. Must add it to the database of the user who sent the friend request by setting
@@ -147,6 +143,16 @@ def handle_index_post(request, db):
 		flash(error)
 
 	# If the request is to send a friend request
+	elif value == 'send':
+		print('We are in send!')
+		# Must send friend request to the user from the current user
+		accept_friend_request(db, g.user['id'], operation_id, 0)
+		# The other user must have an invitation to accept from the current user
+		accept_friend_request(db, operation_id, g.user['id'], 1) 
+
+		error = 'Friend Request Sent!'
+		flash(error)
+
 
 
 
