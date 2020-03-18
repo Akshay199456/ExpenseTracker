@@ -29,3 +29,35 @@ CREATE TABLE expense (
 	FOREIGN KEY(category_id) REFERENCES category(id),
 	FOREIGN KEY(user_id) REFERENCES user(id)
 );
+
+
+
+
+
+-- friendrequest table
+
+-- --
+-- id - > id of the row stored in the database
+-- user_id -> id of the user who is making the request
+-- friend_id -> id of the user whom you have accepted as a friend, sent request, received request from
+-- friend_type_request -> type of friend request
+-- --
+
+-- -- 
+-- For friend_type_request, currently can take up 3 possible values
+-- 0 and 1. 
+-- 	0 -> friend request has been sent
+-- 	1 -> friend request has been received
+--  2 -> friend request has been accepted and is a friend
+-- --
+
+
+
+CREATE TABLE friendrequest (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	user_id INTEGER NOT NULL,
+	friend_id INTEGER NOT NULL,
+	friend_type_request INTEGER NOT NULL,
+	FOREIGN KEY(user_id) REFERENCES user(id),
+	FOREIGN KEY(friend_id) REFERENCES user(id)
+)

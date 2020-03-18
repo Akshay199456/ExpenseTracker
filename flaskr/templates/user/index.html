@@ -13,8 +13,13 @@
             <div class="card-body text-center border border-info">
               <h5 class="card-title">User id: {{user['id']}} </h5>
               <h5 class="card-title">User: {{user['username']}} </h5>
-              {# <input type='submit' class="btn btn-primary" name='submit_{{expense['id']}}' value='Update'>
-              <input type='submit' class="btn btn-primary" name='submit_{{expense['id']}}' value='Delete'> #}
+            {% if user['id'] in friend_set %}
+              <input type='submit' class="btn btn-info" name='submit_{{user['id']}}' value='Friend' disabled>
+            {% elif user['id'] in invite_set %}
+            <input type='submit' class="btn btn-warning" name='submit_{{user['id']}}' value='Pending' disabled>
+            {% else %}
+              <input type='submit' class="btn btn-primary" name='submit_{{user['id']}}' value='Send'>
+            {% endif %}
             </div>
           </div>
         </div>
