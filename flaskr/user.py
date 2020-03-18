@@ -31,29 +31,23 @@ def display_buttons(db):
 	).fetchall()
 
 	print('All friend request sent: ', all_friend_request_sent)
-	friend_request_sent = set()
+	friend_request_sent_set = set()
 	for item in all_friend_request_sent:
-		friend_request_sent.add(item['friend_id'])
-	print('Friend requests sent to id: ', friend_request_sent)
+		friend_request_sent_set.add(item['friend_id'])
+	print('Friend requests sent to id: ', friend_request_sent_set)
 
-	invite_set = set()
 
-	for id in friend_request_sent:
-		print('Id: ', id)
-		friend_request_received = db.execute(
-			'SELECT * FROM friendrequest'
-			' WHERE user_id = ? AND friend_type_request = ? AND friend_id = ?', (id, 1, g.user['id'])
-		).fetchone()
+	# Return dictionary of user_id from whom they have received friend_request but have not accepted it
+	friend_request_received_set = set()
+	all_received_request = db.execute(
+		'SELECT * FROM friendrequest'
+		' WHERE user_id = ? AND friend_type_request = ?', (g.user['id'], 1)
+	).fetchall()
 
-		print('Friend request received: ', friend_request_received)
-
-		if len(friend_request_received) == 0:
-			error = 'No friend request has been recieved!'
-			flash(error)
-		else:
-			invite_set.add(id)
-			print('Invite set: ', invite_set)
-
+	print('All friend request recieved: ', all_received_request)
+	for item in all_received_request:
+		friend_request_received_set.add(item['friend_id'])
+	print('Friend request received set: ', friend_request_received_set)
 
 	# Return dictionary of user_id of those people who are friends
 	all_friends = db.execute(
@@ -69,7 +63,7 @@ def display_buttons(db):
 		print('Friend values: ', tuple_result)
 		friend_set.add(friend['friend_id'])
 
-	return friend_set, invite_set
+	return friend_set, friend_request_sent_set, friend_request_received_set
 
 
 
@@ -98,8 +92,8 @@ def index():
 			flash('No other users on the platform! Check back later!')
 			return redirect(url_for('category.index'))
 		else:
-			friend_set, invite_set = display_buttons(db)
+			friend_set, friend_request_sent_set, friend_request_received_set = display_buttons(db)
 			print('Friend Set: ', friend_set)
 
-		return render_template('user/index.html', all_users = all_users, friend_set = friend_set, invite_set = invite_set)
+		return render_template('user/index.html', all_users = all_users, friend_set = friend_set, friend_request_sent_set = friend_request_sent_set, friend_request_received_set = friend_request_received_set)
 	
