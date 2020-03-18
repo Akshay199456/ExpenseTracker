@@ -68,6 +68,63 @@ def display_buttons(db):
 
 
 
+def handle_index_post(request, db):
+	'''
+	Handles the post request associated with the user portal
+	'''
+	error = None
+	print('Request from handle_index_post: ', request)
+	key = list(request)[0]
+	value = request[key].lower()
+	operation_id = int(key.split('_')[1])
+	print('Key: ', key)
+	print('Value: ', value)
+	print('Operation id: ', operation_id)
+
+	# If the request is to accept a friend request
+	if value == 'accept':
+		# 1. Must add it to the database of the current user by setting friend_type_request = 2
+		# print('We are in accept!')
+		db.execute(
+			'INSERT INTO friendrequest (user_id, friend_id, friend_type_request)'
+			' VALUES (?, ?, ?)', (g.user['id'], operation_id, 2)
+		)
+		db.commit()
+
+
+		# 2. Must add it to the database of the user who sent the friend request by setting
+		# 	friend_type_request = 2
+		db.execute(
+			'INSERT INTO friendrequest (user_id, friend_id, friend_type_request)'
+			' VALUES (?, ?, ?)', (operation_id, g.user['id'], 2)
+		)
+		db.commit()
+		
+		# 3. Must remove the friendrequest from the current user where friend_type_request = 1
+		db.execute(
+			'DELETE FROM friendrequest'
+			' WHERE user_id = ? AND friend_id = ? AND friend_type_request = ?' ,(g.user['id'], operation_id, 1)
+		)
+		db.commit()
+		# 4. Must remove the friendrequest from the user who sent the friend request where 
+		# 	friend_type_request = 0
+		db.execute(
+			'DELETE FROM friendrequest'
+			' WHERE user_id = ? AND friend_id = ? AND friend_type_request = ?' ,(operation_id, g.user['id'], 0)
+		)
+		db.commit()
+
+		error = 'Friend Request Accepted!'
+		flash(error)
+
+	# If the request is to reject a friend request
+
+	# If the request is to remove a friend 
+
+	# If the request is to send a friend request
+
+
+
 
 
 
@@ -76,13 +133,14 @@ def display_buttons(db):
 @bp.route('/', methods = ('GET', 'POST'))
 def index():
 	error = None
+	db = get_db()
 	if request.method == 'POST':
 		print('Request form: ', request.form)
-		return 'We are in user post route!'
+		handle_index_post(request.form, db)
+		return redirect(url_for('category.index'))
 	else:
 		# Showing all the users on the platform that is not the current user
 		print('User id: ', g.user['id'])
-		db = get_db()
 		all_users = db.execute(
 			'SELECT username, id from user'
 			' WHERE id!= ?', (g.user['id'],)
