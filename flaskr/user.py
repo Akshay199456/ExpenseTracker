@@ -79,13 +79,16 @@ def accept_friend_request(db, user_1, user_2, operation_type):
 
 def remove_friend_request(db, user_1, user_2, operation_type):
 	'''
-	Removes friend request from database
+	Does one of two things:
+	1. Removes friend request from database 
+	2. Removes friend from database
 	'''
 	db.execute(
 		'DELETE FROM friendrequest'
 		' WHERE user_id = ? AND friend_id = ? AND friend_type_request = ?' ,(user_1, user_2, operation_type)
 	)
 	db.commit()
+
 
 
 def handle_index_post(request, db):
@@ -133,6 +136,15 @@ def handle_index_post(request, db):
 		flash(error)
 
 	# If the request is to remove a friend 
+	elif value == 'remove':
+		print('We are in remove!')
+		# Remove the friend from the current user
+		remove_friend_request(db, g.user['id'], operation_id, 2)
+		# Remove the current user from the friend
+		remove_friend_request(db, operation_id, g.user['id'], 2)
+
+		error = 'Friend Removed!'
+		flash(error)
 
 	# If the request is to send a friend request
 
