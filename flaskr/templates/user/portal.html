@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h2 class="card-title text-center mt-5">{% block title %}Transaction Portal{% endblock %}</h2>
+{% endblock %}
+
+{% block content %}
+  <nav class="navbar navbar-expand-lg navbar-dark bg-info w-50 my-5 mx-auto rounded">
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+        <ul class="navbar-nav ml-auto mt-2 mt-lg-0 mx-auto row d-flex justify-content-between">
+            <li class="nav-item active col">
+              <a href="{{ url_for('user.sent') }}">Sent</a>
+            </li>
+            <li class="nav-item active col">
+              <a href="{{ url_for('user.received') }}">Received</a>
+            </li>
+            <li class="nav-item active col">
+              <a href="{{ url_for('user.edited') }}">Edited</a>
+            </li>
+            <li class="nav-item active col">
+              <a href="{{ url_for('user.completed') }}">Completed</a>
+            </li>
+        </ul>
+      </div>
+   </nav>
+
+   {% block transaction%}
+   {% endblock %}
+{% endblock %}

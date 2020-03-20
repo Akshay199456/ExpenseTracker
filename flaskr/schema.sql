@@ -55,3 +55,44 @@ CREATE TABLE friendrequest (
 	FOREIGN KEY(user_id) REFERENCES user(id),
 	FOREIGN KEY(friend_id) REFERENCES user(id)
 )
+
+
+
+-- transaction table
+
+-- --
+-- id -> id of the transaction
+-- user_id -> id of the user making the request
+-- friend_id -> id of the user to whom the request is being sent top-level
+-- request_type -> the type of request made by the user
+-- amount -> amount that's being requested
+-- --
+
+
+-- --
+-- For request_type, there are 4 possible values:
+-- 	1 -> send request to send to the person
+-- 	2 -> send request to receive from the person
+-- 	3 -> receive request to send to the person
+-- 	4 -> receive request to receive from the person
+
+--  The above requests will also have an edit and non-edited suffix added to them
+--  	0 -> not edited
+-- 		1 -> edited
+
+-- Continuing the request_type
+
+--  5 -> completed request to send money
+--  6 -> completed request to receive money 
+-- --
+
+CREATE TABLE transactionrequest (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	user_id INTEGER NOT NULL,
+	friend_id INTEGER NOT NULL,
+	request_type INTEGER NOT NULL,
+	amount INTEGER NOT NULL,
+	FOREIGN KEY(user_id) REFERENCES user(id),
+	FOREIGN KEY(friend_id) REFERENCES user(id)
+)
+

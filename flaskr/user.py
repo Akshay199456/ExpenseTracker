@@ -157,6 +157,16 @@ def handle_index_post(request, db):
 
 
 
+def insert_transaction(db, user_id, friend_id, request_type, amount):
+	'''
+	Inserts a transaction to the database
+	'''
+	db.execute(
+		'INSERT INTO transactionrequest (user_id, friend_id, request_type, amount)'
+		' VALUES (?, ?, ?, ?)', (user_id, friend_id, request_type, amount)
+	)
+	db.commit()
+
 
 
 
@@ -220,21 +230,18 @@ def transaction(friend_id, transaction_type, user_id):
 		print('Request form: ', request.form)
 		amount = int(request.form['amount'])
 		print('Amount: ', amount)
+		db = get_db()
 
 		if transaction_type == 'send':
+			print('We are in send')
+			insert_transaction(db, g.user['id'], friend_id, 10, amount)
+			insert_transaction(db, friend_id, g.user['id'], 40, amount)
 			error = 'Request to send money has been sent!'
 		elif transaction_type == 'request':
+			print('We are in request')
+			insert_transaction(db, g.user['id'], friend_id, 20, amount)
+			insert_transaction(db, friend_id, g.user['id'], 30, amount)
 			error = 'Request to receive money has been sent!'
-
-
-		# Need to resume writing code from here:
-			'''
-			Once we get the request to either send/receive money along with the amount,
-			we need to enter that into the database for transactionrequest(need to create it
-			first). Finally, create a notification panel where the user can see the requests
-			coming in and going out and can accept, reject, edit the accept and edit the reject
-			amount
-			'''
 
 		flash(error)
 		return redirect(url_for('user.friend'))
@@ -268,3 +275,30 @@ def view():
 			print('Friend Set: ', friend_set)
 
 		return render_template('user/view.html', all_users = all_users, friend_set = friend_set, friend_request_sent_set = friend_request_sent_set, friend_request_received_set = friend_request_received_set)
+
+@bp.route('/portal', methods = ('GET', 'POST'))
+def portal():
+	error = None
+	if request.method == 'POST':
+		return 'We are in post route!'
+	else:
+		return render_template('user/portal.html')
+
+@bp.route('/sent')
+def sent():
+	return render_template('user/layout.html')
+
+
+@bp.route('/received')
+def received():
+	return render_template('user/layout.html')
+
+
+@bp.route('/edited')
+def edited():
+	return render_template('user/layout.html')
+
+
+@bp.route('/completed')
+def completed():
+	return render_template('user/layout.html')

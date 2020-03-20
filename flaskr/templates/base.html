@@ -44,6 +44,9 @@ The base template is directly in the templates directory. To keep the others org
               <a href="{{ url_for('index') }}">Home</a>
             </li>
             <li class="nav-item active">
+              <a href="{{ url_for('user.portal') }}">Transaction Portal</a>
+            </li>
+            <li class="nav-item active">
               <a href="{{ url_for('auth.logout') }}">Log Out</a>
             </li>
           {% else %}
