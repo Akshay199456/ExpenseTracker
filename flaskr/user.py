@@ -186,7 +186,7 @@ def friend():
 	db = get_db()
 	print('We are in friend route')
 	if request.method == 'POST':
-		print('We are in post route of friend!')
+		print('Request form: ', request.form)
 		return 'We are in post route of friend!'
 	else:	
 		all_friends = db.execute(
@@ -195,6 +195,9 @@ def friend():
 			' WHERE f.user_id = ? AND f.friend_type_request = ?', (g.user['id'], 2)
 		).fetchall()
 		print('All friends: ', all_friends)
+		if not all_friends:
+			error = 'You currently have no friends! Add friends to exchange money.'
+			flash(error)
 	return render_template('user/friends.html', all_friends = all_friends)
 
 

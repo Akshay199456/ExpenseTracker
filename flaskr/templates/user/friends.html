@@ -7,6 +7,9 @@
 {% block content %}
   <form method = "POST">
     <div class="row">
+     {% if not all_friends%}
+     <img src="https://media2.giphy.com/media/HWFAUlreDsAdW/giphy.gif" alt="Responsive No Friends Gif" class="img-fluid rounded mx-auto d-block my-5">
+     {% endif %}
      {% for user in all_friends %}
         <div class="col-sm-10 my-4 py-2 mx-auto">
         	<div class="card">
