@@ -286,19 +286,19 @@ def portal():
 
 @bp.route('/sent')
 def sent():
-	return render_template('user/layout.html')
+	return render_template('user/layout.html', type = 'Sent')
 
 
 @bp.route('/received')
 def received():
-	return render_template('user/layout.html')
+	return render_template('user/layout.html', type = 'Received')
 
 
 @bp.route('/edited')
 def edited():
-	return render_template('user/layout.html')
+	return render_template('user/layout.html', type = 'Edited')
 
 
 @bp.route('/completed')
 def completed():
-	return render_template('user/layout.html')
+	return render_template('user/layout.html', type = 'Completed')
