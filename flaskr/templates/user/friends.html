@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block header %}
-  <h2 class="card-title text-center mt-5">{% block title %}Friends{% endblock %}</h2>
+  <h2 class="card-title text-center mt-5">{% block title %}Friends Transaction Portal{% endblock %}</h2>
 {% endblock %}
 
 {% block content %}
@@ -16,8 +16,8 @@
             <div class="card-body text-center border border-info d-flex justify-content-around align-items-center">
               <h5 class="card-title">{{user['username']}}</h5>
               <div class="d-flex justify-content-end">
-                <input type='submit' class="btn btn-light ml-2" name='submit_{{user['friend_id']}}' value='Send Money'>
-                <input type='submit' class="btn btn-dark ml-2" name='submit_{{user['friend_id']}}' value='Request Money'>
+                <input type='submit' class="btn btn-light ml-2" name='submit_{{user['friend_id']}}' value='Send'>
+                <input type='submit' class="btn btn-dark ml-2" name='submit_{{user['friend_id']}}' value='Request'>
               </div>
             </div>
           </div>

@@ -186,8 +186,15 @@ def friend():
 	db = get_db()
 	print('We are in friend route')
 	if request.method == 'POST':
-		print('Request form: ', request.form)
-		return 'We are in post route of friend!'
+		print('Request form: ', list(request.form))
+		key = list(request.form)[0]
+		transaction_type = request.form[key].lower()
+		friend_id = int(key.split('_')[1])
+
+		print('Key: ', key)
+		print('Value: ', transaction_type)
+		print('Id: ', friend_id)
+		return redirect(url_for('user.transaction', friend_id = friend_id, transaction_type = transaction_type, user_id = g.user['id']))
 	else:	
 		all_friends = db.execute(
 			'SELECT f.user_id, f.friend_id, f.friend_type_request, u.username'
@@ -195,10 +202,46 @@ def friend():
 			' WHERE f.user_id = ? AND f.friend_type_request = ?', (g.user['id'], 2)
 		).fetchall()
 		print('All friends: ', all_friends)
+		
 		if not all_friends:
 			error = 'You currently have no friends! Add friends to exchange money.'
 			flash(error)
 	return render_template('user/friends.html', all_friends = all_friends)
+
+
+
+@bp.route('/transaction/<int:friend_id>/<transaction_type>/<int:user_id>', methods = ('GET', 'POST'))
+def transaction(friend_id, transaction_type, user_id):
+	error = None
+	print('Friend id: ', friend_id)
+	print('Transaction type: ', transaction_type)
+	print('User id: ', user_id)
+	if request.method == 'POST':
+		print('Request form: ', request.form)
+		amount = int(request.form['amount'])
+		print('Amount: ', amount)
+
+		if transaction_type == 'send':
+			error = 'Request to send money has been sent!'
+		elif transaction_type == 'request':
+			error = 'Request to receive money has been sent!'
+
+
+		# Need to resume writing code from here:
+			'''
+			Once we get the request to either send/receive money along with the amount,
+			we need to enter that into the database for transactionrequest(need to create it
+			first). Finally, create a notification panel where the user can see the requests
+			coming in and going out and can accept, reject, edit the accept and edit the reject
+			amount
+			'''
+
+		flash(error)
+		return redirect(url_for('user.friend'))
+
+	else:
+		return render_template('user/transaction.html', friend_id = friend_id, transaction_type = transaction_type, user_id = g.user['id'])
+
 
 
 @bp.route('/view', methods = ('GET', 'POST'))
