@@ -30,10 +30,6 @@ CREATE TABLE expense (
 	FOREIGN KEY(user_id) REFERENCES user(id)
 );
 
-
-
-
-
 -- friendrequest table
 
 -- --
@@ -50,8 +46,6 @@ CREATE TABLE expense (
 -- 	1 -> friend request has been received
 --  2 -> friend request has been accepted and is a friend
 -- --
-
-
 
 CREATE TABLE friendrequest (
 	id INTEGER PRIMARY KEY AUTOINCREMENT,

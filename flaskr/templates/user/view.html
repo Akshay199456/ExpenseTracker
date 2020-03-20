@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h2 class="card-title text-center mt-5">{% block title %}All Users{% endblock %}</h2>
+{% endblock %}
+
+{% block content %}
+  <form method = "POST">
+    <div class="row">
+     {% for user in all_users %}
+        <div class="col-sm-5 my-4 mx-auto">
+        	<div class="card">
+            <div class="card-body text-center border border-info">
+              {% if user['id'] in friend_set %}
+              <h5 class="card-title">{{user['username']}} <span class="badge badge-info"> Friend </span></h5>
+              {% else %}
+              <h5 class="card-title">{{user['username']}}</h5>
+              {% endif %}
+            {% if user['id'] in friend_set %}
+              <input type='submit' class="btn btn-danger" name='submit_{{user['id']}}' value='Remove'>
+            {% elif user['id'] in friend_request_sent_set %}
+            <input type='submit' class="btn btn-warning" name='submit_{{user['id']}}' value='Pending' disabled>
+            {% elif user['id'] in friend_request_received_set %}
+            <input type='submit' class="btn btn-success" name='submit_{{user['id']}}' value='Accept'>
+            <input type='submit' class="btn btn-danger" name='submit_{{user['id']}}' value='Reject'>
+            {% else %}
+              <input type='submit' class="btn btn-primary" name='submit_{{user['id']}}' value='Send'>
+            {% endif %}
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </form>
+{% endblock %}

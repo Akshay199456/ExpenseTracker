@@ -9,6 +9,8 @@ from flaskr.db import get_db
 bp = Blueprint('user', __name__, url_prefix = '/user')
 
 
+# Helper Functions
+
 def display_buttons(db):
 	'''
 	Displays the appropriate buttons depending on the kind of friend request
@@ -158,11 +160,46 @@ def handle_index_post(request, db):
 
 
 
-
+# Routes
 
 
 @bp.route('/', methods = ('GET', 'POST'))
 def index():
+	print('We are in index route!')
+	error = None
+
+	if request.method == 'POST':
+		option = request.form['submit_button'].lower()
+		print('Option: ', option)
+
+		if option == 'all users':
+			return redirect(url_for('user.view'))
+		elif option == 'friends':
+			return redirect(url_for('user.friend'))
+	else:
+		return render_template('user/index.html')
+
+
+@bp.route('/friend', methods = ('GET', 'POST'))
+def friend():
+	error = None
+	db = get_db()
+	print('We are in friend route')
+	if request.method == 'POST':
+		print('We are in post route of friend!')
+		return 'We are in post route of friend!'
+	else:	
+		all_friends = db.execute(
+			'SELECT f.user_id, f.friend_id, f.friend_type_request, u.username'
+			' FROM friendrequest f JOIN user u ON f.friend_id = u.id'
+			' WHERE f.user_id = ? AND f.friend_type_request = ?', (g.user['id'], 2)
+		).fetchall()
+		print('All friends: ', all_friends)
+	return render_template('user/friends.html', all_friends = all_friends)
+
+
+@bp.route('/view', methods = ('GET', 'POST'))
+def view():
 	error = None
 	db = get_db()
 	if request.method == 'POST':
@@ -184,5 +221,4 @@ def index():
 			friend_set, friend_request_sent_set, friend_request_received_set = display_buttons(db)
 			print('Friend Set: ', friend_set)
 
-		return render_template('user/index.html', all_users = all_users, friend_set = friend_set, friend_request_sent_set = friend_request_sent_set, friend_request_received_set = friend_request_received_set)
-	
+		return render_template('user/view.html', all_users = all_users, friend_set = friend_set, friend_request_sent_set = friend_request_sent_set, friend_request_received_set = friend_request_received_set)
