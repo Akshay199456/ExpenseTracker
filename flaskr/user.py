@@ -156,6 +156,16 @@ def handle_index_post(request, db):
 		flash(error)
 
 
+def get_current_user_username(db, user_id):
+	''' Gets the username associated with the current user'''
+	current_user = db.execute(
+		'SELECT username from user'
+		' WHERE id = ?', (user_id,)
+	).fetchone()
+
+	return current_user['username']
+
+
 
 def insert_transaction(db, user_id, friend_id, request_type, amount):
 	'''
@@ -166,7 +176,6 @@ def insert_transaction(db, user_id, friend_id, request_type, amount):
 		' VALUES (?, ?, ?, ?)', (user_id, friend_id, request_type, amount)
 	)
 	db.commit()
-
 
 
 
@@ -276,29 +285,36 @@ def view():
 
 		return render_template('user/view.html', all_users = all_users, friend_set = friend_set, friend_request_sent_set = friend_request_sent_set, friend_request_received_set = friend_request_received_set)
 
-@bp.route('/portal', methods = ('GET', 'POST'))
-def portal():
-	error = None
-	if request.method == 'POST':
-		return 'We are in post route!'
-	else:
-		return render_template('user/portal.html')
 
-@bp.route('/sent')
+@bp.route('/sent', methods = ('GET', 'POST'))
 def sent():
-	return render_template('user/layout.html', type = 'Sent')
+	db = get_db()
+	# Get transactions that have request_type = 10, 11, 20, 21
+	sent_transactions = db.execute(
+		'SELECT t.user_id, t.friend_id, t.request_type, t.amount, u.username'
+		' FROM transactionrequest t JOIN user u'
+		' ON t.friend_id = u.id'
+		' WHERE t.user_id = ?'
+		' AND (t.request_type = ? OR t.request_type = ? OR t.request_type = ? OR t.request_type = ?)',
+		(g.user['id'], 10, 11, 20, 21)
+	).fetchall()
+
+	print('Sent transactions: ', sent_transactions)
+	current_username = get_current_user_username(db, g.user['id'])
+	print('Current user username: ', current_username)
+
+	# Need to resume writing code from here by modifying the sent.html file to make the 
+	# transactions appear the intended way
+	return render_template('user/sent.html', type = 'Sent', sent_transactions = sent_transactions, current_username = current_username)
 
 
 @bp.route('/received')
 def received():
-	return render_template('user/layout.html', type = 'Received')
-
-
-@bp.route('/edited')
-def edited():
-	return render_template('user/layout.html', type = 'Edited')
+	# Get transactions that have request_type = 30, 31, 40, 41
+	return render_template('user/sent.html', type = 'Received')
 
 
 @bp.route('/completed')
 def completed():
-	return render_template('user/layout.html', type = 'Completed')
+	# Get transactions that have request_type = 5, 6
+	return render_template('user/sent.html', type = 'Completed')
