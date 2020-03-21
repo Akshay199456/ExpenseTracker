@@ -18,6 +18,7 @@
               </div>
               {% if transaction['request_type'] == 10 %}
               	<div class="border-bottom border-info w-50 mt-3">
+                  <span class="badge badge-info"> Send Money </span>
               		<h4> You have sent a request to <strong class="text-primary">send ${{transaction['amount']}} </strong> to <strong class="text-primary"> {{transaction['username']}} </strong></h4>
               	</div>
               <!-- <h5 class="card-title"> Friend user id: {{transaction['friend_id']}}</h5> -->
@@ -30,6 +31,7 @@
                 {% elif transaction['request_type'] == 20 %}
 
                 <div class="border-bottom border-info w-50 mt-3">
+                  <span class="badge badge-info"> Receive Money </span>
               		<h4> You have sent a request to <strong class="text-primary">receive ${{transaction['amount']}} </strong> from <strong class="text-primary"> {{transaction['username']}} </strong></h4>
               	</div>
               <!-- <h5 class="card-title"> Friend user id: {{transaction['friend_id']}}</h5> -->
