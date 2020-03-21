@@ -7,15 +7,39 @@
 {% block transaction%}
   <form method = "POST">
     <div class="row">
-     {% for user in all_friends %}
+     {% for transaction in sent_transactions %}
         <div class="col-sm-10 my-4 py-2 mx-auto">
         	<div class="card">
-            <div class="card-body text-center border border-info d-flex justify-content-around align-items-center">
-              <h5 class="card-title">{{user['username']}}</h5>
-              <div class="d-flex justify-content-end">
-                <input type='submit' class="btn btn-light ml-2" name='submit_{{user['friend_id']}}' value='Send'>
-                <input type='submit' class="btn btn-dark ml-2" name='submit_{{user['friend_id']}}' value='Request'>
+            <div class="card-body text-center border border-info d-flex flex-column align-items-center justify-content-center">
+              <!-- <h5 class="card-title"> Current user id: {{transaction['user_id']}}</h5>
+              <h5 class="card-title"> Current user username: {{current_username}}</h5> -->
+              <div class="d-flex align-items-center justify-content-center border-bottom border-info w-25">
+              	<h2 class="card-title d-inline-flex">{{transaction['username']}}</h2><span class="badge badge-dark ml-2"> User </span>
               </div>
+              {% if transaction['request_type'] == 10 %}
+              	<div class="border-bottom border-info w-50 mt-3">
+              		<h4> You have sent a request to <strong class="text-primary">send ${{transaction['amount']}} </strong> to <strong class="text-primary"> {{transaction['username']}} </strong></h4>
+              	</div>
+              <!-- <h5 class="card-title"> Friend user id: {{transaction['friend_id']}}</h5> -->
+              <!-- <h5 class="card-title"> Request type: {{transaction['request_type']}}</h5> -->
+              <!-- <h5 class="card-title"> Amount: {{transaction['amount']}}</h5> -->
+              	<div class="text-center w-25 align mt-3">
+                	<input type='submit' class="btn btn-warning" name="{{type}}_{{transaction['request_type']}}_{{transaction['friend_id']}}" value='Pending' disabled>
+                </div>
+
+                {% elif transaction['request_type'] == 20 %}
+
+                <div class="border-bottom border-info w-50 mt-3">
+              		<h4> You have sent a request to <strong class="text-primary">receive ${{transaction['amount']}} </strong> from <strong class="text-primary"> {{transaction['username']}} </strong></h4>
+              	</div>
+              <!-- <h5 class="card-title"> Friend user id: {{transaction['friend_id']}}</h5> -->
+              <!-- <h5 class="card-title"> Request type: {{transaction['request_type']}}</h5> -->
+              <!-- <h5 class="card-title"> Amount: {{transaction['amount']}}</h5> -->
+              	<div class="text-center w-25 align mt-3">
+                	<input type='submit' class="btn btn-warning" name="{{type}}_{{transaction['request_type']}}_{{transaction['friend_id']}}" value='Pending' disabled>
+                </div>
+                
+               {% endif %}
             </div>
           </div>
         </div>

@@ -305,16 +305,16 @@ def sent():
 
 	# Need to resume writing code from here by modifying the sent.html file to make the 
 	# transactions appear the intended way
-	return render_template('user/sent.html', type = 'Sent', sent_transactions = sent_transactions, current_username = current_username)
+	return render_template('user/sent.html', type = 'sent', sent_transactions = sent_transactions, current_username = current_username)
 
 
 @bp.route('/received')
 def received():
 	# Get transactions that have request_type = 30, 31, 40, 41
-	return render_template('user/sent.html', type = 'Received')
+	return render_template('user/sent.html', type = 'received')
 
 
 @bp.route('/completed')
 def completed():
 	# Get transactions that have request_type = 5, 6
-	return render_template('user/sent.html', type = 'Completed')
+	return render_template('user/sent.html', type = 'completed')
