@@ -178,6 +178,28 @@ def insert_transaction(db, user_id, friend_id, request_type, amount):
 	db.commit()
 
 
+def delete_transaction(db, id):
+	'''
+	Deletes a transaction given the id of the transaction
+	'''
+	db.execute(
+		'DELETE FROM transactionrequest'
+		' WHERE id = ? ', (id, )
+	)
+	db.commit()
+
+
+def select_first_matched_transaction(db, user_id, friend_id, request_type, amount):
+	'''
+	Selects only the first instance of the transaction to delete from the database
+	'''
+	first_match = db.execute(
+		'SELECT * FROM transactionrequest'
+		' WHERE user_id = ? AND friend_id = ? AND request_type = ? AND amount = ?', (user_id, friend_id, request_type, amount)
+	).fetchone()
+	return first_match
+
+
 
 # Routes
 
@@ -289,29 +311,111 @@ def view():
 @bp.route('/sent', methods = ('GET', 'POST'))
 def sent():
 	db = get_db()
-	# Get transactions that have request_type = 10, 11, 20, 21
-	sent_transactions = db.execute(
-		'SELECT t.user_id, t.friend_id, t.request_type, t.amount, u.username'
-		' FROM transactionrequest t JOIN user u'
-		' ON t.friend_id = u.id'
-		' WHERE t.user_id = ?'
-		' AND (t.request_type = ? OR t.request_type = ? OR t.request_type = ? OR t.request_type = ?)',
-		(g.user['id'], 10, 11, 20, 21)
-	).fetchall()
+	if request.method == 'POST':
+		return 'We are in sent post route!'
+	else:
+		# Get transactions that have request_type = 10, 11, 20, 21
+		sent_transactions = db.execute(
+			'SELECT t.user_id, t.friend_id, t.request_type, t.amount, u.username'
+			' FROM transactionrequest t JOIN user u'
+			' ON t.friend_id = u.id'
+			' WHERE t.user_id = ?'
+			' AND (t.request_type = ? OR t.request_type = ? OR t.request_type = ? OR t.request_type = ?)',
+			(g.user['id'], 10, 11, 20, 21)
+		).fetchall()
 
-	print('Sent transactions: ', sent_transactions)
-	current_username = get_current_user_username(db, g.user['id'])
-	print('Current user username: ', current_username)
+		print('Sent transactions: ', sent_transactions)
+		current_username = get_current_user_username(db, g.user['id'])
+		print('Current user username: ', current_username)
 
-	# Need to resume writing code from here by modifying the sent.html file to make the 
-	# transactions appear the intended way
-	return render_template('user/sent.html', type = 'sent', sent_transactions = sent_transactions, current_username = current_username)
+		# Need to resume writing code from here by modifying the sent.html file to make the 
+		# transactions appear the intended way
+		return render_template('user/sent.html', type = 'sent', sent_transactions = sent_transactions, current_username = current_username)
+
+	
 
 
-@bp.route('/received')
+@bp.route('/received', methods = ('GET', 'POST'))
 def received():
+	error = None
+	db = get_db()
 	# Get transactions that have request_type = 30, 31, 40, 41
-	return render_template('user/sent.html', type = 'received')
+	if request.method == 'POST':
+		print('Request form: ', request.form)
+		key = list(request.form)[0]
+		value = request.form[key]
+		tokens = key.split('_')
+		print('Key: ', key)
+		print('Value: ', value)
+		print('Tokens:', tokens)
+		transaction_method = tokens[0]
+		transaction_type = int(tokens[1])
+		transaction_friend_id = int(tokens[2])
+		transaction_amount = int(tokens[3])
+		print('Transaction variables: ', transaction_method, transaction_type, transaction_friend_id, transaction_amount)
+
+
+		# Need to check if the user accepted or rejected the request
+		if value == 'Reject':
+			print('User clicked on reject')
+			# If the user rejected the request: 
+			
+			## get only the first instance of the transaction type
+			first_match = select_first_matched_transaction(db, g.user['id'], transaction_friend_id, transaction_type, transaction_amount)
+			print('Current transaction: ', first_match)
+			print(first_match['id'], first_match['user_id'], first_match['friend_id'], first_match['request_type'], first_match['amount'])
+
+			## remove the transaction from the current user's database
+			delete_transaction(db, first_match['id'])	
+				
+			# remove only the first instance of the transaction from the other user's database
+			if transaction_type == 30:
+				remove_transaction_type = 20
+			elif transaction_type == 40:
+				remove_transaction_type = 10
+
+			## get only the first instance of the transaction
+			return_match = select_first_matched_transaction(db, transaction_friend_id, g.user['id'], remove_transaction_type, transaction_amount)  
+			## remove the transaction from the current user's database 
+			delete_transaction(db, return_match['id'])
+
+
+
+			# Add the transaction for the current user to complete rejected depending on whether
+			# it was a send/receive request
+
+			# Add the transaction for the other user to complete rejected depending on whether
+			# it was a receive/send request
+
+			error = 'Transaction request has been rejected!'
+			flash(error)
+
+
+		# else if the user accepted the request:
+		elif value == 'Accept':
+			print('User clicked on accept')
+			# Need to check if category - 'Credit: {{friend_id, friend_username}} exists'
+				# If it does, we create a new expense and add it with that category
+
+				# If it doesn't:
+					# Create that category
+					# Create a new expense and add it to that category
+
+		return redirect(url_for('user.received'))
+	else:
+		received_transactions = db.execute(
+			'SELECT t.user_id, t.friend_id, t.request_type, t.amount, u.username'
+			' FROM transactionrequest t JOIN user u'
+			' ON t.friend_id = u.id'
+			' WHERE t.user_id = ?'
+			' AND (t.request_type = ? OR t.request_type = ? OR t.request_type = ? OR t.request_type = ?)',
+			(g.user['id'], 30, 31, 40, 41)
+		).fetchall()
+
+		print('Received transactions: ', received_transactions)
+		current_username = get_current_user_username(db, g.user['id'])
+		print('Current user username: ', current_username)
+		return render_template('user/received.html', type = 'received', received_transactions = received_transactions, current_username = current_username)
 
 
 @bp.route('/completed')

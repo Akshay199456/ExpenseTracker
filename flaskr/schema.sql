@@ -82,8 +82,10 @@ CREATE TABLE friendrequest (
 
 -- Continuing the request_type
 
---  5 -> completed request to send money
---  6 -> completed request to receive money 
+--  5 -> completed accepted request to send money
+--  6 -> completed accepted request to receive money 
+--  7 -> completed rejected request to send money
+--  8 -> completed rejected request to receive money
 -- --
 
 CREATE TABLE transactionrequest (

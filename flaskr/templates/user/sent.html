@@ -1,7 +1,7 @@
 {% extends 'user/portal.html' %}
 
 {% block header %}
-  <h2 class="card-title text-center mt-5">{% block title %} Transaction Request {{type}}{% endblock %}</h2>
+  <h2 class="card-title text-center mt-5">{% block title %} Transaction Request {{type[0]|upper}}{{type[1:]}}{% endblock %}</h2>
 {% endblock %}
 
 {% block transaction%}
@@ -24,7 +24,7 @@
               <!-- <h5 class="card-title"> Request type: {{transaction['request_type']}}</h5> -->
               <!-- <h5 class="card-title"> Amount: {{transaction['amount']}}</h5> -->
               	<div class="text-center w-25 align mt-3">
-                	<input type='submit' class="btn btn-warning" name="{{type}}_{{transaction['request_type']}}_{{transaction['friend_id']}}" value='Pending' disabled>
+                	<input type='submit' class="btn btn-warning" name="{{type}}_{{transaction['request_type']}}_{{transaction['friend_id']}}_{{transaction['amount']}}" value='Pending' disabled>
                 </div>
 
                 {% elif transaction['request_type'] == 20 %}
@@ -36,9 +36,9 @@
               <!-- <h5 class="card-title"> Request type: {{transaction['request_type']}}</h5> -->
               <!-- <h5 class="card-title"> Amount: {{transaction['amount']}}</h5> -->
               	<div class="text-center w-25 align mt-3">
-                	<input type='submit' class="btn btn-warning" name="{{type}}_{{transaction['request_type']}}_{{transaction['friend_id']}}" value='Pending' disabled>
+                	<input type='submit' class="btn btn-warning" name="{{type}}_{{transaction['request_type']}}_{{transaction['friend_id']}}_{{transaction['amount']}}" value='Pending' disabled>
                 </div>
-                
+
                {% endif %}
             </div>
           </div>
