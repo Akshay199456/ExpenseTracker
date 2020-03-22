@@ -434,7 +434,7 @@ def completed():
 		' WHERE t.user_id = ?'
 		' AND (t.request_type = ? OR t.request_type = ? OR t.request_type = ? OR t.request_type = ? OR t.request_type = ? OR t.request_type = ? OR t.request_type = ? OR t.request_type = ?)',
 		(g.user['id'], 50, 51, 60, 61, 70, 71, 80, 81)
-	)
+	).fetchall()
 	print('Completed transactions: ', completed_transactions)
 	current_username = get_current_user_username(db, g.user['id'])
 	print('Current user username: ', current_username)

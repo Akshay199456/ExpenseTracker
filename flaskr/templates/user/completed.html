@@ -5,6 +5,12 @@
 {% endblock %}
 
 {% block transaction%}
+{%if not completed_transactions %}
+      <div class="d-flex flex-column justify-content-center align-items-center">
+        <img src="https://media.giphy.com/media/98BKOjhIF4LPW/source.gif" alt="Confused Travolta" class="img-fluid">
+        <h4> <strong> We couldn't find any transactions here! </strong></h4>
+      </div>
+      {% endif %}
     <div class="row">
      {% for transaction in completed_transactions %}
         <div class="col-sm-10 my-4 py-2 mx-auto">
