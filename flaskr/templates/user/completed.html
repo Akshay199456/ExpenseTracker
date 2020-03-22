@@ -8,7 +8,12 @@
 {%if not completed_transactions %}
       <div class="d-flex flex-column justify-content-center align-items-center">
         <img src="https://media.giphy.com/media/98BKOjhIF4LPW/source.gif" alt="Confused Travolta" class="img-fluid">
-        <h4> <strong> We couldn't find any transactions here! </strong></h4>
+        <div class="alert alert-primary alert-dismissible fade show mt-3" role="alert">
+          <strong>We couldn't find any transactions here!</strong>
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
       </div>
       {% endif %}
     <div class="row">
