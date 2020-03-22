@@ -26,30 +26,54 @@
               <div class="d-flex align-items-center justify-content-center border-bottom border-info w-25">
               	<h2 class="card-title d-inline-flex">{{transaction['username']}}</h2><span class="badge badge-dark ml-2"> User </span>
               </div>
-              {% if transaction['request_type'] == 5 %}
-              	<div class="border-bottom border-info w-50 mt-3">
-                  <span class="badge badge-success"> Accepted Request </span>
-              		<h4> Your request to <strong class="text-primary">send ${{transaction['amount']}} </strong> to <strong class="text-primary"> {{transaction['username']}} </strong> has been accepted!</h4>
-              	</div>
-              <!-- <h5 class="card-title"> Friend user id: {{transaction['friend_id']}}</h5> -->
-              <!-- <h5 class="card-title"> Request type: {{transaction['request_type']}}</h5> -->
-              <!-- <h5 class="card-title"> Amount: {{transaction['amount']}}</h5> -->
-              	<div class="text-center w-25 align mt-3 d-flex flex-row justify-content-center">
-                	<h4><strong class="text-danger"> ${{transaction['amount']}}</strong> has been debited from your account!</h4>
-                </div>
-
-                {% elif transaction['request_type'] == 6 %}
+              {% if transaction['request_type'] == 50 %}
 
                 <div class="border-bottom border-info w-50 mt-3">
                   <span class="badge badge-success"> Accepted Request </span>
-                  <h4> Your request to <strong class="text-primary">receive ${{transaction['amount']}} </strong> from <strong class="text-primary"> {{transaction['username']}} </strong> has been accepted!</h4>
+                  <h4> Your request to <strong class="text-primary">send ${{transaction['amount']}} </strong> to <strong class="text-primary"> {{transaction['username']}} </strong> has been approved!</h4>
+                </div>
+                <div class="border-bottom border-info w-25 mt-3">
+                  <h4> Your account has a debit expense of <strong class="text-danger">${{transaction['amount']}} </strong> added to it! Check expenses for more
+                  info.</h4>
+                </div>
+
+                {% elif transaction['request_type'] == 51 %}
+
+                <div class="border-bottom border-info w-50 mt-3">
+                  <span class="badge badge-success"> Accepted Request </span>
+                  <h4> Your have accepted the request to <strong class="text-primary">send ${{transaction['amount']}} </strong> to <strong class="text-primary"> {{transaction['username']}} </strong></h4>
+                </div>
+                <div class="border-bottom border-info w-25 mt-3">
+                  <h4> Your account has a debit expense of <strong class="text-danger">${{transaction['amount']}} </strong> added to it! Check expenses for more
+                  info.</h4>
                 </div>
               <!-- <h5 class="card-title"> Friend user id: {{transaction['friend_id']}}</h5> -->
               <!-- <h5 class="card-title"> Request type: {{transaction['request_type']}}</h5> -->
               <!-- <h5 class="card-title"> Amount: {{transaction['amount']}}</h5> -->
-                <div class="text-center w-25 align mt-3 d-flex flex-row justify-content-center">
-                  <h4><strong class="text-success"> ${{transaction['amount']}}</strong> has been credited to your account!</h4>
+                {% elif transaction['request_type'] == 60 %}
+
+                <div class="border-bottom border-info w-50 mt-3">
+                  <span class="badge badge-success"> Accepted Request </span>
+                  <h4> Your request to <strong class="text-primary">receive ${{transaction['amount']}} </strong> from <strong class="text-primary"> {{transaction['username']}} </strong> has been approved!</h4>
                 </div>
+                <div class="border-bottom border-info w-25 mt-3">
+                  <h4> Your account has a credit expense of <strong class="text-success">${{transaction['amount']}} </strong> added to it! Check expenses for more
+                  info.</h4>
+                </div>
+
+                {% elif transaction['request_type'] == 61 %}
+
+                <div class="border-bottom border-info w-50 mt-3">
+                  <span class="badge badge-success"> Accepted Request </span>
+                  <h4> You have accepted the request to <strong class="text-primary">receive ${{transaction['amount']}} </strong> from <strong class="text-primary"> {{transaction['username']}} </strong></h4>
+                </div>
+                <div class="border-bottom border-info w-25 mt-3">
+                  <h4> Your account has a credit expense of <strong class="text-success">${{transaction['amount']}} </strong> added to it! Check expenses for more
+                  info.
+                  </h4>
+                </div>
+
+        
 
                 {% elif transaction['request_type'] == 70 %}
 

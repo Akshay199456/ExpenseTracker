@@ -200,6 +200,50 @@ def select_first_matched_transaction(db, user_id, friend_id, request_type, amoun
 	return first_match
 
 
+def check_category_exists_and_create(db, category, user_id, amount, kind):
+	'''
+	1. Checks if the category exist or not.
+	2. If it doesn't exist, the category is created
+	3. Get the id associated with the category created
+	4. If the transaction kind is debit, you want to negate the amount value
+	5. Adds the expense to the user
+	'''
+	is_category = db.execute(
+		'SELECT * from category'
+		' WHERE type = ? AND user_id = ?',(category, user_id) 
+	).fetchone()
+	
+	# If it does, we create a new expense and add it with that category to the user
+	if is_category:
+		print('Category exists')
+
+	# If it doesn't:
+	else:
+		print("Category doesn't exist!")
+				
+		## Create that category for the current user
+		db.execute(
+			'INSERT INTO category (user_id, type)'
+			' VALUES (?, ?)', (user_id, category)
+		)
+		db.commit() 
+
+	# Get the id associated with the category
+	current_category = db.execute(
+		'SELECT * FROM category'
+		' WHERE type = ? AND user_id = ?', (category, user_id)
+	).fetchone()
+
+	# Create a new expense and add it to that category for the current user
+	if kind == 'debit':
+		amount = -1 * amount
+
+	db.execute(
+		'INSERT INTO expense (category_id, user_id, value)'
+		' VALUES (?, ?, ?)', (current_category['id'], user_id, amount)
+	)
+	db.commit()
+
 
 
 
@@ -427,8 +471,48 @@ def received():
 			check_category_exists_and_create(db, category_user, g.user['id'], transaction_amount, kind_user)
 			check_category_exists_and_create(db, category_friend, transaction_friend_id, transaction_amount, kind_friend)
 
-			 
 
+
+
+			# Remove the transaction from the current user as well as friend and push it as a completed
+			# transaction to both the current user and the friend
+
+			## get only the first instance of the transaction type for the current user
+			first_match = select_first_matched_transaction(db, g.user['id'], transaction_friend_id, transaction_type, transaction_amount)
+			print('Current transaction: ', first_match)
+			print(first_match['id'], first_match['user_id'], first_match['friend_id'], first_match['request_type'], first_match['amount'])
+
+			## remove the transaction from the current user's database
+			delete_transaction(db, first_match['id'])	
+
+
+			# remove only the first instance of the transaction from the other user's database
+			if transaction_type == 30:
+				remove_transaction_type = 20
+			elif transaction_type == 40:
+				remove_transaction_type = 10
+
+			## get only the first instance of the transaction for the friend
+			return_match = select_first_matched_transaction(db, transaction_friend_id, g.user['id'], remove_transaction_type, transaction_amount)  
+			## remove the transaction from the current user's database 
+			delete_transaction(db, return_match['id'])
+
+
+			## Add the transaction for the current user to completed rejected transaction depending 
+			## on whether it was a send/receive request to the database
+						#    AND
+			# Add the transaction for the other user to complete rejected depending on whether
+			# it was a receive/send request to the database
+
+			if first_match['request_type'] == 30:
+				insert_transaction(db, g.user['id'], transaction_friend_id, 51, first_match['amount'])
+				insert_transaction(db, transaction_friend_id, g.user['id'], 60, first_match['amount'])
+			elif first_match['request_type'] == 40:
+				insert_transaction(db, g.user['id'], transaction_friend_id, 61, first_match['amount'])
+				insert_transaction(db, transaction_friend_id, g.user['id'], 50, first_match['amount'])
+
+			error = 'Transaction request has been accepted!'
+			flash(error)
 
 		return redirect(url_for('user.received'))
 
@@ -446,52 +530,6 @@ def received():
 		current_username = get_current_user_username(db, g.user['id'])
 		print('Current user username: ', current_username)
 		return render_template('user/received.html', type = 'received', received_transactions = received_transactions, current_username = current_username)
-
-
-def check_category_exists_and_create(db, category, user_id, amount, kind):
-	'''
-	1. Checks if the category exist or not.
-	2. If it doesn't exist, the category is created
-	3. Get the id associated with the category created
-	4. If the transaction kind is debit, you want to negate the amount value
-	5. Adds the expense to the user
-	'''
-	is_category = db.execute(
-		'SELECT * from category'
-		' WHERE type = ? AND user_id = ?',(category, user_id) 
-	).fetchone()
-	
-	# If it does, we create a new expense and add it with that category to the user
-	if is_category:
-		print('Category exists')
-
-	# If it doesn't:
-	else:
-		print("Category doesn't exist!")
-				
-		## Create that category for the current user
-		db.execute(
-			'INSERT INTO category (user_id, type)'
-			' VALUES (?, ?)', (user_id, category)
-		)
-		db.commit() 
-
-	# Get the id associated with the category
-	current_category = db.execute(
-		'SELECT * FROM category'
-		' WHERE type = ? AND user_id = ?', (category, user_id)
-	).fetchone()
-
-	# Create a new expense and add it to that category for the current user
-	if kind == 'debit':
-		amount = -1 * amount
-
-	db.execute(
-		'INSERT INTO expense (category_id, user_id, value)'
-		' VALUES (?, ?, ?)', (current_category['id'], user_id, amount)
-	)
-	db.commit()
-
 
 
 @bp.route('/completed')
