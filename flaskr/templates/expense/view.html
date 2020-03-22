@@ -20,8 +20,12 @@
 
               <h5 class="card-title">Category: {{expense['type']}}</h5>
               <p class="card-text">Amount: ${{ expense['value']|abs }}</p>
-              <input type='submit' class="btn btn-primary" name='submit_{{expense['id']}}' value='Update'>
-              <input type='submit' class="btn btn-primary" name='submit_{{expense['id']}}' value='Delete'>
+              {% if ((expense['type'].startswith('CREDIT (')) or (expense['type'].startswith('DEBIT ('))) %}
+              <input type='submit' class="btn btn-danger" name="submit_{{expense['id']}}" value='Delete'>
+              {% else %}
+              <input type='submit' class="btn btn-primary" name="submit_{{expense['id']}}" value='Update'>
+              <input type='submit' class="btn btn-danger" name="submit_{{expense['id']}}" value='Delete'>
+              {% endif %}
             </div>
           </div>
         </div>

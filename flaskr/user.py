@@ -201,6 +201,12 @@ def select_first_matched_transaction(db, user_id, friend_id, request_type, amoun
 
 
 
+
+
+
+
+
+
 # Routes
 
 
@@ -398,14 +404,34 @@ def received():
 		# else if the user accepted the request:
 		elif value == 'Accept':
 			print('User clicked on accept')
-			# Need to check if category - 'Credit: {{friend_id, friend_username}} exists'
-				# If it does, we create a new expense and add it with that category
+			## Get the name of the person sending the request
+			friend_username = get_current_user_username(db, transaction_friend_id)
+			print('Friend username: ', friend_username)
 
-				# If it doesn't:
-					# Create that category
-					# Create a new expense and add it to that category
+			## Need to check if category - 'Credit/Debit: {{friend_username}} exists' for the current user
+			if transaction_type == 30:
+				category_user = 'DEBIT (' + friend_username + ')'
+				kind_user = 'debit'
+
+				category_friend = 'CREDIT (' + get_current_user_username(db, g.user['id']) +')'
+				kind_friend = 'credit'
+
+			elif transaction_type == 40:
+				category_user = 'CREDIT (' + friend_username + ')'
+				kind_user = 'credit'
+
+				category_friend = 'DEBIT (' + get_current_user_username(db, g.user['id']) + ')'
+				kind_friend = 'debit'
+
+			## Checks and adds categories 
+			check_category_exists_and_create(db, category_user, g.user['id'], transaction_amount, kind_user)
+			check_category_exists_and_create(db, category_friend, transaction_friend_id, transaction_amount, kind_friend)
+
+			 
+
 
 		return redirect(url_for('user.received'))
+
 	else:
 		received_transactions = db.execute(
 			'SELECT t.user_id, t.friend_id, t.request_type, t.amount, u.username'
@@ -420,6 +446,52 @@ def received():
 		current_username = get_current_user_username(db, g.user['id'])
 		print('Current user username: ', current_username)
 		return render_template('user/received.html', type = 'received', received_transactions = received_transactions, current_username = current_username)
+
+
+def check_category_exists_and_create(db, category, user_id, amount, kind):
+	'''
+	1. Checks if the category exist or not.
+	2. If it doesn't exist, the category is created
+	3. Get the id associated with the category created
+	4. If the transaction kind is debit, you want to negate the amount value
+	5. Adds the expense to the user
+	'''
+	is_category = db.execute(
+		'SELECT * from category'
+		' WHERE type = ? AND user_id = ?',(category, user_id) 
+	).fetchone()
+	
+	# If it does, we create a new expense and add it with that category to the user
+	if is_category:
+		print('Category exists')
+
+	# If it doesn't:
+	else:
+		print("Category doesn't exist!")
+				
+		## Create that category for the current user
+		db.execute(
+			'INSERT INTO category (user_id, type)'
+			' VALUES (?, ?)', (user_id, category)
+		)
+		db.commit() 
+
+	# Get the id associated with the category
+	current_category = db.execute(
+		'SELECT * FROM category'
+		' WHERE type = ? AND user_id = ?', (category, user_id)
+	).fetchone()
+
+	# Create a new expense and add it to that category for the current user
+	if kind == 'debit':
+		amount = -1 * amount
+
+	db.execute(
+		'INSERT INTO expense (category_id, user_id, value)'
+		' VALUES (?, ?, ?)', (current_category['id'], user_id, amount)
+	)
+	db.commit()
+
 
 
 @bp.route('/completed')
