@@ -71,21 +71,19 @@ CREATE TABLE friendrequest (
 
 -- --
 -- For request_type, there are 4 possible values:
--- 	1 -> send request to send to the person
--- 	2 -> send request to receive from the person
--- 	3 -> receive request to send to the person
--- 	4 -> receive request to receive from the person
-
---  The above requests will also have an edit and non-edited suffix added to them
---  	0 -> not edited
--- 		1 -> edited
+-- 	10 -> send request to send to the person
+-- 	20 -> send request to receive from the person
+-- 	30 -> receive request to send to the person
+-- 	40 -> receive request to receive from the person
 
 -- Continuing the request_type
 
 --  5 -> completed accepted request to send money
 --  6 -> completed accepted request to receive money 
---  7 -> completed rejected request to send money
---  8 -> completed rejected request to receive money
+--  70 -> completed rejected request to send money to the person -> request made by the current_user
+--  71 -> completed rejected request to send money -> request made by the other_user
+--  80 -> completed rejected request to receive money -> request made by the current_user
+--  81 -> completed rejected request to receive money -> request made by the other_user
 -- --
 
 CREATE TABLE transactionrequest (

@@ -308,29 +308,26 @@ def view():
 		return render_template('user/view.html', all_users = all_users, friend_set = friend_set, friend_request_sent_set = friend_request_sent_set, friend_request_received_set = friend_request_received_set)
 
 
-@bp.route('/sent', methods = ('GET', 'POST'))
+@bp.route('/sent')
 def sent():
 	db = get_db()
-	if request.method == 'POST':
-		return 'We are in sent post route!'
-	else:
-		# Get transactions that have request_type = 10, 11, 20, 21
-		sent_transactions = db.execute(
-			'SELECT t.user_id, t.friend_id, t.request_type, t.amount, u.username'
-			' FROM transactionrequest t JOIN user u'
-			' ON t.friend_id = u.id'
-			' WHERE t.user_id = ?'
-			' AND (t.request_type = ? OR t.request_type = ? OR t.request_type = ? OR t.request_type = ?)',
-			(g.user['id'], 10, 11, 20, 21)
-		).fetchall()
+	# Get transactions that have request_type = 10, 11, 20, 21
+	sent_transactions = db.execute(
+		'SELECT t.user_id, t.friend_id, t.request_type, t.amount, u.username'
+		' FROM transactionrequest t JOIN user u'
+		' ON t.friend_id = u.id'
+		' WHERE t.user_id = ?'
+		' AND (t.request_type = ? OR t.request_type = ?)',
+		(g.user['id'], 10, 20)
+	).fetchall()
 
-		print('Sent transactions: ', sent_transactions)
-		current_username = get_current_user_username(db, g.user['id'])
-		print('Current user username: ', current_username)
+	print('Sent transactions: ', sent_transactions)
+	current_username = get_current_user_username(db, g.user['id'])
+	print('Current user username: ', current_username)
 
-		# Need to resume writing code from here by modifying the sent.html file to make the 
-		# transactions appear the intended way
-		return render_template('user/sent.html', type = 'sent', sent_transactions = sent_transactions, current_username = current_username)
+	# Need to resume writing code from here by modifying the sent.html file to make the 
+	# transactions appear the intended way
+	return render_template('user/sent.html', type = 'sent', sent_transactions = sent_transactions, current_username = current_username)
 
 	
 
@@ -367,7 +364,8 @@ def received():
 
 			## remove the transaction from the current user's database
 			delete_transaction(db, first_match['id'])	
-				
+
+
 			# remove only the first instance of the transaction from the other user's database
 			if transaction_type == 30:
 				remove_transaction_type = 20
@@ -380,12 +378,18 @@ def received():
 			delete_transaction(db, return_match['id'])
 
 
-
-			# Add the transaction for the current user to complete rejected depending on whether
-			# it was a send/receive request
-
+			## Add the transaction for the current user to completed rejected transaction depending 
+			## on whether it was a send/receive request to the database
+						#    AND
 			# Add the transaction for the other user to complete rejected depending on whether
-			# it was a receive/send request
+			# it was a receive/send request to the database
+
+			if first_match['request_type'] == 30:
+				insert_transaction(db, g.user['id'], transaction_friend_id, 71, first_match['amount'])
+				insert_transaction(db, transaction_friend_id, g.user['id'], 80, first_match['amount'])
+			elif first_match['request_type'] == 40:
+				insert_transaction(db, g.user['id'], transaction_friend_id, 81, first_match['amount'])
+				insert_transaction(db, transaction_friend_id, g.user['id'], 70, first_match['amount'])
 
 			error = 'Transaction request has been rejected!'
 			flash(error)
@@ -408,8 +412,8 @@ def received():
 			' FROM transactionrequest t JOIN user u'
 			' ON t.friend_id = u.id'
 			' WHERE t.user_id = ?'
-			' AND (t.request_type = ? OR t.request_type = ? OR t.request_type = ? OR t.request_type = ?)',
-			(g.user['id'], 30, 31, 40, 41)
+			' AND (t.request_type = ? OR t.request_type = ?)',
+			(g.user['id'], 30, 40)
 		).fetchall()
 
 		print('Received transactions: ', received_transactions)
@@ -420,5 +424,18 @@ def received():
 
 @bp.route('/completed')
 def completed():
-	# Get transactions that have request_type = 5, 6
-	return render_template('user/sent.html', type = 'completed')
+	# Get transactions that have request_type = 50, 51, 60, 61, 70, 71, 80, 81
+	error = None
+	db = get_db()
+	completed_transactions = db.execute(
+		'SELECT t.user_id, t.friend_id, t.request_type, t.amount, u.username'
+		' FROM transactionrequest t JOIN user u'
+		' ON t.friend_id = u.id'
+		' WHERE t.user_id = ?'
+		' AND (t.request_type = ? OR t.request_type = ? OR t.request_type = ? OR t.request_type = ? OR t.request_type = ? OR t.request_type = ? OR t.request_type = ? OR t.request_type = ?)',
+		(g.user['id'], 50, 51, 60, 61, 70, 71, 80, 81)
+	)
+	print('Completed transactions: ', completed_transactions)
+	current_username = get_current_user_username(db, g.user['id'])
+	print('Current user username: ', current_username)
+	return render_template('user/completed.html', type = 'completed', completed_transactions = completed_transactions, current_username = current_username)
