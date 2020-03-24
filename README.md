@@ -2,6 +2,41 @@
 
 A few set up instructions that can help speed up the setting the server are given below:
 
+## As a user
+
+1. Clone this repo by:
+
+	- git clone https://github.com/Akshay199456/ExpenseTracker.git
+
+
+2. Move into the project folder. Once there, depending on the version of python you have installed on your system, install the dependencies using:
+
+	- pip install -r requirements.txt if using python 2.x
+	- pip3 install -r requirements.txt if using python 3.x 
+
+
+3. To set up the database in sqlite3, run the commands provided in ```schema.sql``` in sqlite3.
+
+
+4. Open up another terminal, and to set up the server make sure you are in the top-level `flask-tutorial` directory and not the `flaskr` package
+
+	- To setup the application in development mode
+
+	```
+	export FLASK_APP=flaskr
+	export FLASK_ENV=development
+	flask run
+	```
+
+
+5. Type in the web browser ```localhost:5000``` to view the application
+
+
+
+
+## As a developer
+
+
 1. Having an environment helps set up and install the dependencies really easily without having any
 hassle
 
